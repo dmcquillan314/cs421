@@ -1,0 +1,47 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{1}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\begin{enumerate}	
+\item{\bf{Problem 1}} \\ \\
+\textcolor{ForestGreen}{let} x = 5;;
+
+\textcolor{ForestGreen}{let} a = x * 4;;
+
+\(\rho_1 = \left\{ x \rightarrow 5, a \rightarrow 20 \right\} \)
+\textcolor{ForestGreen}{let} g x = x + (3 * a);; 
+
+\(\rho_2 = \left\{ g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5, a \rightarrow 20 \right\} \)
+\textcolor{ForestGreen}{let} a = g (g 3);;
+
+\(\rho_3 = \left\{ a \rightarrow 123, g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
+\textcolor{ForestGreen}{let} b =
+\hspace{5mm} \textcolor{ForestGreen}{let} f x y = g x + g (y + a) in 
+
+\(\rho_4\)
+\hspace{5mm} f x (g a);;
+
+\(\rho_5 =  \left\{ b \rightarrow TODO, a \rightarrow 123, g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
+
+\end{enumerate}
+
+\end{document}
+
