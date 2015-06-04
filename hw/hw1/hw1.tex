@@ -27,19 +27,24 @@
 \textcolor{ForestGreen}{let} a = x * 4;;
 
 \(\rho_1 = \left\{ x \rightarrow 5, a \rightarrow 20 \right\} \)
-\textcolor{ForestGreen}{let} g x = x + (3 * a);; 
 
-\(\rho_2 = \left\{ g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5, a \rightarrow 20 \right\} \)
-\textcolor{ForestGreen}{let} a = g (g 3);;
+\textcolor{ForestGreen}{let} g x = x + (3 * a);; 
 
-\(\rho_3 = \left\{ a \rightarrow 123, g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
-\textcolor{ForestGreen}{let} b =
-\hspace{5mm} \textcolor{ForestGreen}{let} f x y = g x + g (y + a) in 
+\(\rho_2 = \left\{ g \rightarrow  < \text{\textcolor{TealBlue}{fun }} x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5, a \rightarrow 20 \right\} \)
 
-\(\rho_4\)
-\hspace{5mm} f x (g a);;
+\textcolor{ForestGreen}{let} a = g (g 3);;
 
-\(\rho_5 =  \left\{ b \rightarrow TODO, a \rightarrow 123, g \rightarrow  < x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
+\(\rho_3 = \left\{ a \rightarrow 123, g \rightarrow  < \text{\text{\textcolor{TealBlue}{fun }} } x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
+
+\textcolor{ForestGreen}{let} b =
+
+\hspace{5mm} \textcolor{ForestGreen}{let} f x y = g x + g (y + a) in 
+
+\(\rho_4 = \left\{ f \rightarrow < x \rightarrow \text{\text{\textcolor{TealBlue}{fun }} } y \rightarrow g x + g (y + a), \rho_3>, a \rightarrow 123, g \rightarrow  < \text{\text{\textcolor{TealBlue}{fun }} } x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\} \)
+
+\hspace{5mm} f x (g a);;
+
+\(\rho_5 =  \left\{ b \rightarrow 431, a \rightarrow 123, g \rightarrow  < \text{\text{\textcolor{TealBlue}{fun }} } x \rightarrow x + (3 * a), \rho_1>, x \rightarrow 5 \right\}  \)
 
 \end{enumerate}
 
