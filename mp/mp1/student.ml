@@ -8,10 +8,10 @@
 open Mp1common
 
 (* Problem 1 *)
-let title = "MP 1 -- Basic OCaml" (* Change this *)
+let title = "MP 1 -- Basic OCaml"
 
 (* Problem 2 *)
-let e = 2.71828  (* Change this *)
+let e = 2.71828
 
 (* Problem 3 *)
 let firstFun n = (n * 2) + 5;; 

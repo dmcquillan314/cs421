@@ -1,0 +1,25 @@
+(**************************************************************************
+ * You can add new test cases by adding new elements to the following lists
+ * Format is:
+ * TEST<X>ARG(<weight>, <function_name>, <arg1>, <arg2>, ..., <argX>)
+ *
+ * <X> is the number of argument that the function being tested takes.
+ **************************************************************************)
+
+(* This list is for regular problems *)
+let rubric =
+[
+     TEST2ARG(1, rev_apply, (fun n -> n+1), (2,3)) ;
+     TEST1ARG(1, s, 9) ;
+     TEST1ARG(1, rle, [1;1;1;2;2;2;3;1;1;1]) ;
+     TEST1ARG(1, rle, ['a';'b';'a';'a';'a';'c']) ;
+     TEST2ARG(1, merge, [1;2;5;6], [3;4;6;9]) ; 
+     TEST1ARG(1, separate, [1;3;2;4;5]) ;
+     TEST1ARG(1, maxsumseq, [-1; 3; 2; -2; 5; -16]) ;
+     TEST2ARG(1, check_adj, [[1;2;3;4];[3;0;4;5];[1;4;3;5];[2;1];[1;2];[2;3;4]], (0,3));
+     TEST1ARG(1, cumsum, [1;2;3])
+]
+(* Note: the last entry should not be followed by a semicolon. *)
+
+(* This is the list for extra credit problems *)
+let extra_rubric = [ ]
