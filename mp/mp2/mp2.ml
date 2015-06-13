@@ -17,7 +17,16 @@ let rec s n =
     else 2 + s(n - 1);; 
 
 (* Problem 3 *)
-let rec rle lst = raise (Failure "Function not implemented yet.") 
+(* let rec rle lst = raise (Failure "Function not implemented yet.") *)
+let rec rle lst = 
+    let rec aux x c lst = match lst
+        with [] -> ([(x, c)],[])
+        | (x1 :: xs) -> if x1 = x then aux x (c + 1) xs else ([(x, c)], lst)
+    in
+        match lst
+            with [] -> []
+            | (x :: xs) -> match aux x 1 xs
+                with (tup_array, rest) -> tup_array @ rle rest;;
 
 (* Problem 4 *)
 let rec merge l1 l2 = match (l1, l2)
