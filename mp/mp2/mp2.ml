@@ -11,10 +11,12 @@ open Mp2common
 let rev_apply f (x,y) = (f y, f x);; 
 
 (* Problem 2 *)
-let rec s n = 
-    if n <= 1 then 1
-    else if (n mod 2) = 0 then 3 * s(n / 2)
-    else 2 + s(n - 1);; 
+let s n = 
+    let rec aux n =   
+        if n <= 1 then 1
+        else if (n mod 2) = 0 then 3 * aux(n / 2)
+        else 2 + aux(n - 1)
+    in aux n;; 
 
 (* Problem 3 *)
 (* let rec rle lst = raise (Failure "Function not implemented yet.") *)
