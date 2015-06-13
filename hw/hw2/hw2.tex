@@ -1,0 +1,143 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{mathtools}
+\usepackage{epstopdf}
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{2}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 			
+		
+\begin{enumerate}	
+\item{\bf{Problem 1}} \\ \\
+let p1 = (1., 3.);;
+let p2 = (2., 5.);;
+
+\begin{flalign*}
+\rho_1 = & \{  & \\
+	& \hspace*{8mm} p2 \rightarrow (2., 5.),  \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+ \end{flalign*}
+
+let slope (x,y) = y /. x;;
+
+\begin{flalign*}
+\rho_2 = & \{  & \\
+	& \hspace*{8mm} slope \rightarrow <(x,y) \rightarrow y /. x, \rho_1>, \\ 
+	& \hspace*{8mm} p2 \rightarrow (2., 5.),  \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+ \end{flalign*}
+
+let sub (x1,y1) (x2,y2) = (x2 - x1, y2 - y1);;
+
+\begin{flalign*}
+\rho_3 = & \{  & \\
+	& \hspace*{8mm} sub \rightarrow <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\ 
+	& \hspace*{8mm} slope \rightarrow <(x,y) \rightarrow y /. x, \rho_1>, \\ 
+	& \hspace*{8mm} p2 \rightarrow (2., 5.),  \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+\end{flalign*}
+
+let slope p1 p2 = slope (sub p1 p2);;
+
+\begin{flalign*}
+\rho_4 = & \{  & \\
+	& \hspace*{8mm} slope \rightarrow <p1 \rightarrow \text{fun } p2 \rightarrow \text{slope( sub p1 p2 )}, \rho_3>, \\ 
+	& \hspace*{8mm} sub \rightarrow <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\ 
+	& \hspace*{8mm} p2 \rightarrow (2., 5.),  \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+\end{flalign*}
+
+let slope\_p2 = slope p2;;
+
+
+Evaluation:
+
+\begin{flalign*}
+	\text{Eval}(\text{slope p2}, \rho_4) &= \text{Eval}(\text{App}(<p1 \rightarrow \text{fun } p2 \rightarrow \text{slope( sub p1 p2 )}, \rho_3>, (2., 5.)), \rho_4) \\
+	&= \text{Eval}( < \text{fun } p2 \rightarrow \text{slope( sub p1 p2 )}, \left\{ p1 \rightarrow (2., 5.) \right\} + \rho_3>, \rho_4) \\
+	&= <p2 \rightarrow \text{slope(sub p1 p2)}, \left\{ p1 \rightarrow (2., 5.) \right\} + \rho_3>
+\end{flalign*}
+
+\begin{flalign*}
+\rho_5 = & \{  & \\
+	& \hspace*{8mm} slope\_p2 \rightarrow <p2 \rightarrow \text{slope(sub p1 p2)}, \left\{ p1 \rightarrow (2., 5.) \right\} + \rho_3> \\
+	& \hspace*{8mm} slope \rightarrow <p1 \rightarrow \text{fun } p2 \rightarrow \text{slope( sub p1 p2 )}, \rho_3>, \\ 
+	& \hspace*{8mm} sub \rightarrow <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\ 
+	& \hspace*{8mm} p2 \rightarrow (2., 5.),  \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+\end{flalign*}
+
+let p2 = (3., 9.);;
+
+\begin{flalign*}
+\rho_6 = & \{  & \\
+	& \hspace*{8mm} p2 \rightarrow (3., 9.),  \\ 
+	& \hspace*{8mm} slope\_p2 \rightarrow <p2 \rightarrow \text{slope(sub p1 p2)}, \left\{ p1 \rightarrow (2., 5.) \right\} + \rho_3> \\
+	& \hspace*{8mm} slope \rightarrow <p1 \rightarrow \text{fun } p2 \rightarrow \text{slope( sub p1 p2 )}, \rho_3>, \\ 
+	& \hspace*{8mm} sub \rightarrow <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\ 
+	& \hspace*{8mm} p1 \rightarrow (1., 3.) \\
+ & \}  &
+\end{flalign*}
+
+slope\_p2 p1;;
+
+\begin{flalign*}
+	\text{slope\_p2 p1} &= \text{Eval}(\text{slope\_p2 p1}, \rho_6) \\
+	&= \text{Eval}(\text{App}(<p2 \rightarrow \text{slope(sub p1 p2)}, \left\{ p1 \rightarrow (2., 5.) \right\} + \rho_3>, (1., 3.)), \rho_6) \\
+	&= \text{Eval}(\text{slope(sub p1 p2)}, \left\{ p2 \rightarrow (1., 3.), p1 \rightarrow (2., 5.) \right\} + \rho_3) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm}  \text{Eval}(\text{sub p1 p2}, \left\{ p2 \rightarrow (1., 3.), p1 \rightarrow (2., 5.) \right\} + \rho_3 ))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm} \text{Eval}( \text{App}( \text{App}(  \\
+	& \hspace*{30mm} <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\
+	& \hspace*{15mm}  (2., 5.) ), (1., 3.) ) ))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm} \text{Eval}( (x2 - x1, y2 - y1) , \left\{ x2 \rightarrow 1, y2 \rightarrow 3, x1 \rightarrow 2, y1 \rightarrow 5 \right\} + \rho_2))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, (-1, -2)))\\
+	&= \text{Eval}(y /. x, \left\{ x \rightarrow -1, y \rightarrow -2 \right\} + \rho_1 )\\
+	&= 2
+\end{flalign*}
+
+slope p1 p2;;
+
+\begin{flalign*}
+	\text{slope p1 p2} &= \text{Eval}(\text{slope p1 p2}, \rho_6) \\
+	&= \text{Eval}(\text{App}(\text{App}(<p1 \rightarrow \text{fun } p2 \rightarrow \text{slope(sub p1 p2)}, \rho_3>, (1., 3.)), (3., 9.))) \\
+	&= \text{Eval}(\text{slope(sub p1 p2)}, \left\{ p2 \rightarrow (3., 9.), p1 \rightarrow (1., 3.) \right\} + \rho_3) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm}  \text{Eval}(\text{sub p1 p2}, \left\{ p2 \rightarrow (3., 9.), p1 \rightarrow (1., 3.) \right\} + \rho_3 ))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm} \text{Eval}( \text{App}( \text{App}(  \\
+	& \hspace*{30mm} <(x1,y1) \rightarrow  \text{fun }  (x2, y2) \rightarrow (x2 - x1, y2 - y1), \rho_2>, \\
+	& \hspace*{15mm}  (1., 3.) ), (3., 9.) ) ))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, \\
+	& \hspace*{15mm} \text{Eval}( (x2 - x1, y2 - y1) , \left\{ x2 \rightarrow 3, y2 \rightarrow 9, x1 \rightarrow 1, y1 \rightarrow 3 \right\} + \rho_2))) \\
+	&= \text{Eval}(\text{App}( <(x,y) \rightarrow y /. x, \rho_1>, (2, 6)))\\
+	&= \text{Eval}(y /. x, \left\{ x \rightarrow 2, y \rightarrow 6 \right\} + \rho_1 )\\
+	&= 3
+\end{flalign*}
+
+\end{enumerate}
+
+\end{document}
+
