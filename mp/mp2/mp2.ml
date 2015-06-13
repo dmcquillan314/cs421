@@ -68,7 +68,10 @@ let check_adj adj_list (a,b) =
 
 (* Problem 8 *)
 let cumsum l = 
-    let rec aux l sum = match l
-        with [] -> []
-        | ( l1 :: ls ) -> let sum = sum + l1 in [ sum ] @ aux ls sum
-    in aux l 0;;
+    let rec aux l sum_list cur_sum = match l
+        with [] -> sum_list 
+        | ( l1 :: ls ) -> 
+            let cur_sum = cur_sum + l1 in 
+            let sum_list = sum_list @ [ cur_sum ] in
+            aux ls sum_list cur_sum
+    in aux l [] 0;;
