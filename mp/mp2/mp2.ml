@@ -31,13 +31,44 @@ let rec merge l1 l2 = match (l1, l2)
             l1h :: merge l1r l2;;
 
 (* Problem 5 *)
-let rec separate l = raise (Failure "Function not implemented yet.") 
+let rec separate l =  
+    let rec aux l acc = match l
+        with [] -> acc
+        | ( x :: xs ) -> 
+            match acc
+                with (odd, even) -> 
+                    if x mod 2 = 0 then 
+                        aux xs (odd, even @ [x])
+                    else
+                        aux xs (odd @ [x], even)
+    in aux l ([],[]);;
 
 (* Problem 6 *)
-let rec maxsumseq l = raise (Failure "Function not implemented yet.") 
+let rec maxsumseq l =
+    let rec maxAux x lr m = 
+        match lr
+        with [] -> m
+        | (l1 :: lr) -> maxAux x lr (if (x + l1) > m then x + l1 else m)
+    in 
+        match l
+        with [] -> 0
+        | (l1 :: ls) -> 
+            let (max, recmax) = (maxAux l1 ls 0, maxsumseq ls) 
+            in 
+                if max > recmax then
+                    max
+                else recmax;;
 
 (* Problem 7 *)
-let check_adj adj_list (a,b) = raise (Failure "Function not implemented yet.") 
+let check_adj adj_list (a,b) = 
+    if a < 0 || b < 0 then false
+    else
+        List.mem b (List.nth adj_list a);;
+
 
 (* Problem 8 *)
-let cumsum l = raise (Failure "Function not implemented yet.") 
+let cumsum l = 
+    let rec aux l sum = match l
+        with [] -> []
+        | ( l1 :: ls ) -> let sum = sum + l1 in [ sum ] @ aux ls sum
+    in aux l 0;;
