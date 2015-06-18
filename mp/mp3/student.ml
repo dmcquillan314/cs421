@@ -78,6 +78,11 @@ let rec partition l p = match l
     with [] -> ([], [])
     | (x :: xs) -> match partition xs p
         with (t, f) -> if p(x) then (x :: t, f) else (t, x :: f);;
-let rec partitionk l p k =  
-  raise(Failure "Function not implemented yet.")
-
+let rec partitionk l p k = match l
+    with [] -> pairk [] [] k
+    | (x :: xs) -> partitionk xs p
+        (fun pair -> match pair
+            with (t, f) -> p x
+                (fun b -> 
+                    if b then consk x t (fun c -> pairk c f k) 
+                    else consk x f (fun c -> pairk t c k)));;
