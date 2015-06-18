@@ -19,7 +19,6 @@ let s n =
     in aux n;; 
 
 (* Problem 3 *)
-(* let rec rle lst = raise (Failure "Function not implemented yet.") *)
 let rec rle lst = 
     let rec aux x c lst = match lst
         with [] -> ([(x, c)],[])
