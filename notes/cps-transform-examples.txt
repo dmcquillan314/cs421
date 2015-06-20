@@ -1,0 +1,32 @@
+Example 1 (IF-THEN-ELSE):
+[[ if x > 0 then 2 else 3 ]] (FUN w -> report w)
+
+= [[ x > 0 ]] ( FUN v -> if v then [[ 2 ]] (FUN w -> report w) else [[ 3 ]] (FUN w -> report w) )
+
+= (FUN v -> if v then (FUN w -> report w) 2 else (FUN w -> report w) 3 ) (x > 0)
+
+Example 2 (FUNCTIONS):
+[[ fn x => x + 1 ]] (FUN w -> report w)
+
+= (FUN w -> report w) (FUN x k -> [[ x + 1 ]]k )
+
+= (FUN w -> report w) (FUN x k -> [[ x ]] (FUN v -> [[ 1 ]] (FUN v2 -> k( v + v2 )))
+
+= (FUN w -> report w) (FUN x k -> (FUN v -> [[ 1 ]] (FUN v2 -> k( v + v2 ) ) ) x )
+
+= (FUN w -> report w) (FUN x k -> (FUN v -> ( (FUN v2 -> k( v + v2 ) ) 1 ) ) x )   
+
+Example 3 (APPLICATION)
+[[ (FUN x -> x + 1) 2 ]] (FUN w -> report w)
+
+= [[ FUN x -> x + 1 ]] ( FUN v1 -> [[ 2 ]] (FUN v2 -> v1 v2 (FUN w -> report w) )
+
+= ( FUN v1 -> [[ 2 ]] (FUN v2 -> v1 v2 (FUN w -> report w) ) ) ( FUN x k -> [[ x + 1 ]] k )
+
+= ( FUN v1 -> ( (FUN v2 -> v1 v2 (FUN w -> report w) ) 2 ) ) ( FUN x k -> [[ x + 1 ]] k ) 
+
+= ( FUN v1 -> ( (FUN v2 -> v1 v2 (FUN w -> report w) ) 2 ) ) ( FUN x k -> [[ x ]] ( FUN v1 -> [[ 1 ]] ( FUN v2 -> k ( v1 + v2 ) ) ) ) 
+
+= ( FUN v1 -> ( (FUN v2 -> v1 v2 (FUN w -> report w) ) 2 ) ) ( FUN x k -> ( ( FUN v1 -> [[ 1 ]] ( FUN v2 -> k ( v1 + v2 ) ) ) x ) )
+
+= ( FUN v1 -> ( (FUN v2 -> v1 v2 (FUN w -> report w) ) 2 ) ) ( FUN x k -> ( ( FUN v1 -> ( ( FUN v2 -> k ( v1 + v2 ) ) 1 ) ) x ) )

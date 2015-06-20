@@ -1,0 +1,83 @@
+1.
+
+[[ FUN f -> FUN x -> if x > 0 then f x else f ((-1) * x) ]] (FUN w -> report w)
+
+= (FUN w -> report w) ( FUN f k0 -> [[ FUN x -> if x > 0 then f x else f((-1) * x) ]] k0 )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> [[ if x > 0 then f x else f((-1) * x) ]] k1 ) )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> [[ x > 0 ]] ( FUN v -> if v then [[ f x ]] k1 else [[ f( (-1) * x ) ]] k1 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> ( FUN v -> if v then [[ f x ]] k1 else [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then [[ f ]] ( FUN e -> [[ x ]] ( FUN v2 -> e v2 k1 ) ) else [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                [[ f ]] ( FUN e -> [[ (-1) * x ) ]] ( FUN v2 -> e v2 k1 ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                ( ( FUN e -> [[ (-1) * x ]] ( FUN v2 -> e v2 k1 ) ) f ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                ( ( FUN e -> [[ -1 ]] ( FUN v3 -> [[ x ]] ( FUN v4 -> ( ( FUN v2 -> e v2 k1 ) ( v3 * v4 ) ) ) ) ) f ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                ( ( FUN e -> 
+                    ( ( FUN v3 -> [[ x ]] ( FUN v4 -> ( ( FUN v2 -> e v2 k1 ) ( v3 * v4 ) ) ) ) -1 ) 
+                ) f ) ) ) )  
+
+= (FUN w -> report w) ( FUN f k0 -> 
+    k0 ( FUN x k1 -> 
+        ( FUN v -> 
+            if v then 
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )  
+            else 
+                ( ( FUN e -> 
+                    ( ( FUN v3 -> 
+                        ( ( FUN v4 -> 
+                            ( 
+                                ( FUN v2 -> e v2 k1 ) ( v3 * v4 ) 
+                            ) 
+                        ) x )
+                    ) -1 ) 
+                ) f ) 
+            )
+        )
+    ) 
+
+2.
+
+
+
+
