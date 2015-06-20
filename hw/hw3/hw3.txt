@@ -78,6 +78,21 @@
 
 2.
 
+type two_three_tree =
+| TwoChildren of int * string * (two_three_tree * two_three_tree)
+| ThreeChildren of int * (string * string) * (two_three_tree * two_three_tree * two_three_tree)
+| LeafOneData of int * string
+| LeafTwoData of int * (string * string);;
 
+3.
 
+type 'a red_black_tree =
+    | RedNode of 'a red_node
+    | BlackNode of 'a black_node
+and 'a red_node =
+    | RedTree of 'a * ( 'a black_node * 'a black_node )
+and 'a black_node =
+    | TwoRedNodes of 'a * ( 'a red_node * 'a red_node )
+    | TwoBlackNodes of 'a * ( 'a black_node * 'a black_node )
+    | BlackLeaf;;
 
