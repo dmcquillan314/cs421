@@ -1,0 +1,150 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{3}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\begin{enumerate}
+
+	\item[]{\textbf{Problem 1}}
+	
+	\begin{lstlisting}
+[[ FUN f -> FUN x -> if x > 0 then f x else f ((-1) * x) ]] 
+	(FUN w -> report w)
+
+= (FUN w -> report w) ( FUN f k0 -> [[ FUN x -> 
+	if x > 0 then f x else f((-1) * x) ]] k0 )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> 
+	[[ if x > 0 then f x else f((-1) * x) ]] k1 ) )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> 
+	[[ x > 0 ]] ( FUN v -> 
+		if v then 
+			[[ f x ]] k1 
+		else [[ f( (-1) * x ) ]] k1 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 -> k0 ( FUN x k1 -> (
+	 FUN v -> 
+	 	if v then 
+			[[ f x ]] k1 
+		else [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then 
+            	[[ f ]] ( FUN e ->
+			[[ x ]] ( FUN v2 -> e v2 k1 ) ) 
+            else [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                [[ f( (-1) * x ) ]] k1 ) ( x > 0 ) ) )
+                
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                [[ f ]] ( FUN e -> 
+                        [[ (-1) * x ) ]] ( FUN v2 -> e v2 k1 ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                ( ( FUN e -> 
+                        [[ (-1) * x ]] ( FUN v2 -> e v2 k1 ) ) f ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                ( ( FUN e -> [[ -1 ]] ( FUN v3 -> [[ x ]] ( FUN v4 ->
+                    ( ( FUN v2 -> e v2 k1 ) ( v3 * v4 ) ) ) ) ) f ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                ( ( FUN e ->
+                    ( ( FUN v3 -> [[ x ]] ( FUN v4 -> 
+                    	( ( FUN v2 -> e v2 k1 ) ( v3 * v4 ) ) ) ) -1 )
+                ) f ) ) ) )
+
+= (FUN w -> report w) ( FUN f k0 ->
+    k0 ( FUN x k1 ->
+        ( FUN v ->
+            if v then
+                ( ( FUN e -> ( ( FUN v2 -> e v2 k1 ) x ) ) f )
+            else
+                ( ( FUN e ->
+                    ( ( FUN v3 ->
+                        ( ( FUN v4 ->
+                            (
+                                ( FUN v2 -> e v2 k1 ) ( v3 * v4 )
+                            )
+                        ) x )
+                    ) -1 )
+                ) f )
+            )
+        )
+    )	
+    \end{lstlisting}
+	
+	\item[]{\textbf{Problem 2}}
+	
+	\begin{lstlisting}
+type two_three_tree =
+| TwoChildren of int * string * (two_three_tree * two_three_tree)
+| ThreeChildren of 
+	int * 
+	(string * string) * 
+	(two_three_tree * two_three_tree * two_three_tree)
+| LeafOneData of int * string
+| LeafTwoData of int * (string * string);;
+	\end{lstlisting}
+	
+	\item[]{\textbf{Problem 3}}
+	
+	\begin{lstlisting}
+type 'a red_black_tree =
+    | RedNode of 'a * ( 'a black_node * 'a black_node )
+    | BlackNode of 'a black_node
+and 'a black_node =
+    | TwoRedNodes of 'a * ( 'a black_node * 'a black_node )
+    | TwoBlackNodes of 'a * ( 'a black_node * 'a black_node )
+    | BlackLeaf;;
+   	\end{lstlisting}
+
+\end{enumerate}
+
+\end{document}
+
