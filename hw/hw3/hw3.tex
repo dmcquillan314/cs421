@@ -136,12 +136,14 @@ type two_three_tree =
 	
 	\begin{lstlisting}
 type 'a red_black_tree =
-    | RedNode of 'a * ( 'a black_node * 'a black_node )
-    | BlackNode of 'a black_node
+| RedNode of 'a red_node
+| BlackNode of 'a black_node
+and 'a red_node =
+| RedTree of 'a * ( 'a black_node * 'a black_node )
 and 'a black_node =
-    | TwoRedNodes of 'a * ( 'a black_node * 'a black_node )
-    | TwoBlackNodes of 'a * ( 'a black_node * 'a black_node )
-    | BlackLeaf;;
+| TwoRedNodes of 'a * ( 'a red_node * 'a red_node )
+| TwoBlackNodes of 'a * ( 'a black_node * 'a black_node )
+| BlackLeaf;;
    	\end{lstlisting}
 
 \end{enumerate}
