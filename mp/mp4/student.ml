@@ -58,36 +58,44 @@ let rec cps expression cont =
         | ConExp(c) -> AppExp(cont, ConExp(c))
         | IfExp( exp1, exp2, exp3 ) -> 
                 let v = freshFor (freeVars exp2 @ freeVars exp3 @ freeVars cont )
-                    in 
-                        AppExp( 
-                            FunExp(v, IfExp(VarExp v, 
-                                AppExp(cont, exp2),
-                                AppExp(cont, exp3) 
-                            ) ), 
-                            exp1
-                        )
+                    in cps exp1 (FunExp(v, IfExp(VarExp v, 
+                                cps exp2 cont,
+                                cps exp3 cont
+                            ) ))
         | AppExp( exp1, exp2 ) -> 
                 let v_1 = freshFor (freeVars exp2 @ freeVars cont)
                 in let v_2 = freshFor (v_1 :: freeVars cont)
                 in
-                    AppExp(
-                        FunExp(v_1, 
-                            AppExp(
-                                FunExp(v_2, AppExp(AppExp(VarExp v_1, VarExp v_2), cont)),
-                                exp2
-                            )
-                        ),
-                        exp1
-                    )
+                    cps exp1 (FunExp(v_1, cps exp2 (FunExp(v_2, 
+                            AppExp(AppExp(VarExp v_1, VarExp v_2), cont
+                    ))))) 
         | BinExp(binop, exp1, exp2) ->
                 let v_1 = freshFor (freeVars exp1 @ freeVars exp2 @ freeVars cont)
                 in let v_2 = freshFor (v_1 :: freeVars exp1 @ freeVars exp2 @ freeVars cont)
                 in
-                    AppExp(FunExp(v_1, 
-                        AppExp(FunExp(v_2, 
-                            AppExp(cont, BinExp(binop, VarExp v_1, VarExp v_2))
-                        ), exp2)
-                    ), exp1 );;    
+                    cps exp1 (FunExp(v_1, 
+                                cps exp2 (FunExp(v_2, 
+                                        AppExp(cont, 
+                                        BinExp(binop, VarExp v_1, VarExp v_2))
+                                    ))
+                                ))
+        | MonExp(monop, exp) ->
+                let v = freshFor (freeVars cont)
+                in cps exp (FunExp(v, AppExp(cont, MonExp(monop, VarExp v))))
+        | FunExp(x, exp) ->
+                let k = freshFor (freeVars exp)
+                in
+                    AppExp(cont, 
+                        FunExp(x, 
+                            FunExp(k, 
+                                cps exp (VarExp k)
+                            )
+                        )
+                    )
+        | LetExp(x, exp1, exp2) -> cps exp1 (FunExp(x, cps exp2 cont))  
+        | RecExp(f, x, exp1, exp2) -> 
+                let v = freshFor (f :: x :: (freeVars exp1))
+                in RecExp(f, x, FunExp(v, cps exp1 (VarExp v)), cps exp2 cont);;
 
 
 
