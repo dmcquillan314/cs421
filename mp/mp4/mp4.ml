@@ -50,7 +50,7 @@ let rec freeVars expression =
             | FunExp(s, exp) -> remove_item (freeVars exp) s
             | LetExp(s,exp1,exp2) -> freeVars exp1 @ (remove_item (freeVars exp2) s )
             | RecExp(f,x,exp1,exp2) -> (remove_item (remove_item (freeVars exp1) f) x) @ (remove_item (freeVars exp2) f)
-            | _ -> [];;
+            | OAppExp(exp1,exp2) -> freeVars exp1 @ freeVars exp2;;
 
 let rec cps expression cont = 
     match expression
@@ -95,7 +95,15 @@ let rec cps expression cont =
         | LetExp(x, exp1, exp2) -> cps exp1 (FunExp(x, cps exp2 cont))  
         | RecExp(f, x, exp1, exp2) -> 
                 let v = freshFor (f :: x :: (freeVars exp1))
-                in RecExp(f, x, FunExp(v, cps exp1 (VarExp v)), cps exp2 cont);;
+                in RecExp(f, x, FunExp(v, cps exp1 (VarExp v)), cps exp2 cont)
+        | OAppExp(exp1,exp2) -> 
+                let v_1 = freshFor (freeVars exp1 @ freeVars cont)
+                in let v_2 = freshFor (v_1 :: freeVars cont)
+                in
+                    cps exp2 (FunExp(v_1, cps exp1 (FunExp(v_2, 
+                            AppExp(AppExp(VarExp v_2, VarExp v_1), cont
+                    )))));;
+                
 
 
 
