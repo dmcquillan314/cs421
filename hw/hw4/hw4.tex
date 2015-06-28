@@ -1,0 +1,838 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\usepackage[T1]{fontenc}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{4}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+
+	 	
+\textbf{Problem 1}
+	
+	Type derivation for:
+
+	\begin{lstlisting}
+let rec f = fun x -> fun n -> if n <= 0 then [] else x::(f x (n - 1))
+	in (f 3 2, f "a" 4) : int list * string list
+	\end{lstlisting}	
+	
+\def \tauone {\alpha \rightarrow \text{ int } \rightarrow \alpha \text{ list } }	
+\def \tauoneint  { \text{ int } \rightarrow \text{ int } \rightarrow  \text{ int } \text{ list } }
+\def \tauonestring  { \text{ string } \rightarrow \text{ int } \rightarrow  \text{ string } \text{ list } }
+\def \tautwo {\alpha }	
+\def \tautwoint {\text{ int } }	
+\def \tautwostring {\text{ string } }	
+\def \tauthree { \text{ int } }	
+\def \taufour {\alpha \text{ list } }	
+\def \taufourint {\text{ int } \text{ list } }	
+\def \taufourstring {\text{ string } \text{ list } }
+\def \tauintstringlisttuple { \taufourint * \taufourstring }
+	
+\begin{equation}
+\frac
+{
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauone \} \text{ |- fun x -> fun n -> }
+    		} 
+    		{ 
+    			\splitfrac
+    			{
+    				\text{ if n <= 0 then [] else x::(f x (n - 1) ) }
+    			}
+    			{
+    				: \tauone
+    			}
+    		}
+	}^{e_1}
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauone \} \text{ |- (f 3 2, f "a" 4 ) }
+    		} 
+    		{ 
+    			\tauintstringlisttuple
+    		}
+	}^{e_2}
+}
+{
+	\splitfrac
+	{ 
+		\{ \} \text{ |- let rec f = fun x } \rightarrow \text{ fun n } \rightarrow \text{ if n } \leq \text{  0 then [] else x::(f x (n - 1)) } 
+	} 
+	{ 
+		\text{in (f 3 2, f "a" 4) : int list * string list } 
+	}
+}  
+{
+	REC
+}
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+        	      \overbrace{
+        			\splitfrac
+			{
+                          	\{ x: \tautwo, f: \tauone \} \text{ |- fun n -> }
+                         }
+                	        {
+                                 \text{ if n <= 0 then [] else x::(f x (n - 1))}: \tauthree -> \taufour
+                         }
+               }^{e_3}
+	} 
+        {
+            \underbrace{
+                    \splitfrac
+                    { 
+                            \{ f: \tauone \} \text{ |- fun x -> fun n -> }
+                    } 
+                    { 
+                            \splitfrac
+                            {
+                                    \text{ if n <= 0 then [] else x::(f x (n - 1) ) }
+                            }
+                            {
+                                    : \tauone
+                            }
+                    }
+            }_{e_1}
+	}
+        {
+            FUN
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+        	      \overbrace{
+        			\splitfrac
+			{
+				\{ n: \tauthree, x: \tautwo, f: \tauone \} \text{ |- }
+                         }
+                	        {
+                                 \text{ if n <= 0 then [] else x::(f x (n - 1))}: \taufour
+                         }
+               }^{e_4}
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+                          	\{ x: \tautwo, f: \tauone \} \text{ |- fun n -> }
+                         }
+                	        {
+                                 \text{ if n <= 0 then [] else x::(f x (n - 1))}: \tauthree -> \taufour
+                         }
+               }_{e_3}
+	}
+        {
+            FUN
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+        	      \overbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ n <= 0 }: \text{bool}
+                         }
+               }^{e_5}
+        	      \overbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ [] }: \taufour
+                         }
+               }^{e_6}
+        	      \overbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ x::(f x (n - 1)) }: \taufour
+                         }
+               }^{e_7}
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+				\{ n: \tauthree, x: \tautwo, f: \tauone \} \text{ |- }
+                         }
+                	        {
+                                 \text{ if n <= 0 then [] else x::(f x (n - 1))}: \taufour
+                         }
+               }_{e_4}
+	}
+        {
+            ITE
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+		\frac
+		{
+			VAR
+		}
+		{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                 		}
+                	       		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                 	}
+           		{
+                        		n: \tauthree
+                 	}
+		}
+		\frac
+		{
+			CON
+		}
+		{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                 		}
+                	       		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                 	}
+           		{
+                        		0: int
+                 	}
+		}
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ n <= 0 }: \text{bool}
+                         }
+               }_{e_5}
+	}
+        {
+            REL
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+		CON
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ [] }: \taufour
+                         }
+               }_{e_6}
+	}
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+        	      \overbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ ( (::) x ) }: \taufour \rightarrow \taufour
+                         }
+               }^{e_8}
+        	      \overbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ (f x (n - 1)) }: \taufour
+                         }
+               }^{e_9}
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ x::(f x (n - 1)) }: \taufour
+                         }
+               }_{e_7}
+	}
+        {
+            APP
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+	      	\frac
+		{
+			CON
+		}
+		{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                 		}
+                			{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+               		}
+                		{
+                	                \text{ (::) }: \tautwo \rightarrow \taufour \rightarrow \taufour
+	                 }
+               }
+	      	\frac
+		{
+			VAR
+		}
+		{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                 		}
+                			{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+               		}
+                		{
+                	                \text{ x }: \tautwo
+	                 }
+               }
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ ( (::) x ) }: \taufour \rightarrow \taufour
+                         }
+               }_{e_8}
+	}
+        {
+            APP
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+	        	      \overbrace{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ f x }: \tauthree \rightarrow \taufour
+                         	      }
+                     }^{e_{10}}
+	        	      \overbrace{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ (n - 1) }: \tauthree
+                         	      }
+                     }^{e_{11}}
+	} 
+        {
+        	      \underbrace{
+        			\splitfrac
+			{
+        				\splitfrac
+				{
+					\{ n: \tauthree, x: \tautwo,
+                         		}
+                	        		{
+ 					f: \tauone \} \text{ |- }                         		
+ 				}
+                         }
+                	        {
+                                 \text{ (f x (n - 1)) }: \taufour
+                         }
+               }_{e_9}
+	}
+        {
+            APP
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+		\frac
+		{
+			VAR
+		}
+		{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ f }: \tauone
+                         	      }
+	      }
+	      \frac
+	      {
+	      	      VAR
+	      }
+	      {
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ x }: \tautwo
+                         	      }
+	      }
+	} 
+        {
+        	      \underbrace{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ f x }: \tauthree \rightarrow \taufour
+                         	      }
+               }_{e_{10}}
+	}
+        {
+            APP
+        }
+\end{equation}
+
+\begin{equation}
+	\frac
+	{
+		\frac
+		{
+			VAR
+		}
+		{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ n }: \tauthree
+                         	      }
+	      }
+	      \frac
+	      {
+	      		CON
+	      }
+	      {
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ 1 }: \tauthree
+                         	      }
+	      }
+	      \hspace{4mm} (-): \tauthree \rightarrow \tauthree \rightarrow \tauthree
+	} 
+        {
+	        	      \underbrace{
+	        			\splitfrac
+				{
+        					\splitfrac
+					{
+						\{ n: \tauthree, x: \tautwo,
+	                         		}
+        		        	        		{
+ 						f: \tauone \} \text{ |- }                         		
+ 					}
+ 	                        }
+        		               {
+                         		        \text{ (n - 1) }: \tauthree
+                         	      }
+                     }_{e_{11}}
+	}
+        {
+            PO
+        }
+\end{equation}
+	
+\begin{equation}
+\frac
+{
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f 3 2 }: \taufourint
+    		}
+	}^{e_{12}}
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f "a" 4 }: \taufourstring
+    		}
+	}^{e_{13}}
+    		\splitfrac
+    		{ 
+            		\splitfrac
+            		{ 
+	    			(,):  \taufourint
+            		} 
+            		{ 
+            			\rightarrow \taufourstring 
+            		}
+    		} 
+    		{ 
+            		\splitfrac
+            		{ 
+	    			\rightarrow \taufourint *
+            		} 
+            		{ 
+            			\taufourstring 
+            		}
+    		}
+}
+{
+	\underbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauone \} \text{ |- (f 3 2, f "a" 4 ) }
+    		} 
+    		{ 
+    			\tauintstringlisttuple
+    		}
+	}_{e_2}
+}  
+{
+	PO
+}
+\end{equation}
+
+\begin{equation}
+\frac
+{
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f 3 }: \tauthree \rightarrow \taufourint
+    		}
+	}^{e_{14}}
+	\frac{
+		CON
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ 2 }: \tauthree
+    		}
+	}
+}
+{
+	\underbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f 3 2 }: \taufourint
+    		}
+	}_{e_{12}}
+}  
+{
+	APP
+}
+\end{equation}
+
+\begin{equation}
+\frac
+{
+	\frac{
+		VAR
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f }: \tauoneint
+    		}
+	}
+	\frac{
+		CON
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ 3 }: \tauthree
+    		}
+	}
+}
+{
+	\underbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauoneint \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f 3 }: \tauthree \rightarrow \taufourint
+    		}
+	}_{e_{14}}
+}  
+{
+	APP
+}
+\end{equation}
+
+\begin{equation}
+\frac
+{
+	\overbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f "a" }: \tauthree \rightarrow \taufourstring
+    		}
+	}^{e_{15}}
+	\frac{
+		CON
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ 4 }: \tauthree
+    		}
+	}
+}
+{
+	\underbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f "a" 4 }: \taufourstring
+    		}
+	}_{e_{13}}
+}  
+{
+	APP
+}
+\end{equation}
+
+\begin{equation}
+\frac
+{
+	\frac{
+		VAR
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f }: \tauonestring
+    		}
+	}
+	\frac{
+		CON
+	}
+	{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ "a" }: \tauthree
+    		}
+	}
+}
+{
+	\underbrace{
+    		\splitfrac
+    		{ 
+    			\{ f: \tauonestring \} \text{ |- }
+    		} 
+    		{ 
+    			\text{ f "a" }: \tauthree \rightarrow \taufourstring
+    		}
+	}_{e_{15}}
+}  
+{
+	APP
+}
+\end{equation}
+
+\end{document}
+
