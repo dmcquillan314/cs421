@@ -72,6 +72,23 @@ let rec gather_exp_ty_substitution gamma exp tau =
                                 Some(
                                     Proof([bool_proof;then_proof;else_proof], judgment),
                                     subst_compose sigma_3 sigma_2_1))
+    | FnExp(v, exp_1) ->
+        let (t_1,t_2) = (fresh(),fresh()) in
+        let t_2_proof = gather_exp_ty_substitution (ins_env gamma v ([],t_1)) 
+                                                    exp_1
+                                                    t_2 in
+            (match t_2_proof with None -> None
+                 | Some (proof_t2, sigma) -> 
+                     let u = unify [(
+                         monoTy_lift_subst sigma tau,
+                         monoTy_lift_subst sigma ( mk_fun_ty t_1 t_2 ) )] in
+                    (match u with None -> None
+                         | Some( u_sigma ) -> Some(
+                            Proof([proof_t2], judgment),
+                            subst_compose u_sigma sigma
+                         )
+                    )
+            )
     | _ -> raise(Failure "Not yet complete")
 and gather_dec_ty_substitution gamma dec = 
     raise (Failure "Not implemented yet")
