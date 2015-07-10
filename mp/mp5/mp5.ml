@@ -111,6 +111,21 @@ let rec gather_exp_ty_substitution gamma exp tau =
         (match int_type_proof with None -> None
              | Some(proof_int_type, sigma) -> Some( Proof([proof_int_type], judgment),
                                                     sigma ))
+    | LetExp(dec_1, exp) ->
+        let dec_1_proof = gather_dec_ty_substitution gamma dec_1 in
+        (match dec_1_proof with None -> None
+             | Some(proof_dec_1, delta, sigma_1) ->
+                let tau = fresh() in
+                let tau' = monoTy_lift_subst sigma_1 tau in
+                let gamma_s1 = env_lift_subst sigma_1 gamma in
+                let gamma_ds1 = sum_env delta gamma_s1 in
+                let exp_proof = gather_exp_ty_substitution gamma_ds1 
+                                                           exp 
+                                                           tau' in
+                (match exp_proof with None -> None
+                     | Some(proof_exp, sigma_2) ->
+                        Some( Proof([proof_dec_1;proof_exp], judgment),
+                              subst_compose sigma_2 sigma_1 ) ) )
 and gather_dec_ty_substitution gamma dec = 
     match dec with 
         Val(v, exp) -> 
@@ -138,4 +153,20 @@ and gather_dec_ty_substitution gamma dec =
                     let gamma_s_f = make_env f tau_gen in
                     let judgment = DecJudgment(gamma, dec, gamma_s_f) in
                     Some( Proof([proof_fx], judgment), gamma_s_f, sigma))
+        | Seq(dec_1, dec_2) ->
+            let dec_1_proof = gather_dec_ty_substitution gamma dec_1 in
+            (match dec_1_proof with None -> None
+                 | Some(proof_dec_1, delta_1, sigma_1) ->
+                    let gamma_dec_2 = env_lift_subst sigma_1 (sum_env delta_1 gamma) in
+                    let dec_2_proof = gather_dec_ty_substitution gamma_dec_2 dec_2 in
+                    (match dec_2_proof with None -> None
+                         | Some(proof_dec_2, delta_2, sigma_2) ->
+                            let gamma_dec_21 = sum_env delta_2 delta_1 in
+                            let sigma_21 = subst_compose sigma_2 sigma_1 in
+                            let gamma_s_21_d_21 = env_lift_subst sigma_21 gamma_dec_21 in
+                            let judgment = DecJudgment(gamma, dec, gamma_s_21_d_21) in
+                            Some( Proof([proof_dec_1;proof_dec_2], judgment),
+                                  gamma_s_21_d_21,
+                                  sigma_21
+                            )))
         | _ -> raise (Failure "Not implemented yet")
