@@ -74,7 +74,7 @@ let rec gather_exp_ty_substitution gamma exp tau =
                                     subst_compose sigma_3 sigma_2_1))
     | FnExp(v, exp_1) ->
         let (t_1,t_2) = (fresh(),fresh()) in
-        let t_2_proof = gather_exp_ty_substitution (ins_env gamma v ([],t_1)) 
+        let t_2_proof = gather_exp_ty_substitution (ins_env gamma v (polyTy_of_monoTy t_1)) 
                                                     exp_1
                                                     t_2 in
             (match t_2_proof with None -> None
@@ -89,6 +89,53 @@ let rec gather_exp_ty_substitution gamma exp tau =
                          )
                     )
             )
-    | _ -> raise(Failure "Not yet complete")
+    | AppExp(exp_1, exp_2) -> 
+        let t_1 = fresh() in
+        let t_1_t_proof = gather_exp_ty_substitution gamma 
+                                                     exp_1 
+                                                     (mk_fun_ty t_1 tau) in
+        (match t_1_t_proof with None -> None
+             | Some(proof_t_1_t, sigma_1) ->
+                     let gamma_e2 = env_lift_subst sigma_1 gamma
+                     and t_2 = monoTy_lift_subst sigma_1 t_1 in
+                     let t_2_proof = gather_exp_ty_substitution gamma_e2
+                                                                exp_2
+                                                                t_2 in
+                     match t_2_proof with None -> None
+                         | Some(proof_t_2, sigma_2) -> 
+                                 Some( Proof([proof_t_1_t;proof_t_2], judgment),
+                                       subst_compose sigma_2 sigma_1))
+    | RaiseExp(exp_1) -> 
+        let int_type = int_ty in
+        let int_type_proof = gather_exp_ty_substitution gamma exp_1 int_type in
+        (match int_type_proof with None -> None
+             | Some(proof_int_type, sigma) -> Some( Proof([proof_int_type], judgment),
+                                                    sigma ))
 and gather_dec_ty_substitution gamma dec = 
-    raise (Failure "Not implemented yet")
+    match dec with 
+        Val(v, exp) -> 
+            let t_1 = fresh() in
+            let t_1_proof = gather_exp_ty_substitution gamma exp t_1 in
+            (match t_1_proof with None -> None
+                | Some(proof_t_1, sigma) ->
+                    let gamma_1 = env_lift_subst sigma gamma in
+                    let t_2 = monoTy_lift_subst sigma t_1 in
+                    let gen_type = gen gamma_1 t_2 in
+                    let gamma_v = make_env v gen_type in
+                    let judgment = DecJudgment(gamma, dec, gamma_v) in
+                    Some( Proof([proof_t_1], judgment), gamma_v, sigma))
+        | Rec(f, x, exp) -> 
+            let (tau_1,tau_2) = (fresh(),fresh()) in
+            let tau_f = mk_fun_ty tau_1 tau_2 in
+            let gamma_x = ins_env gamma x (polyTy_of_monoTy tau_1) in 
+            let gamma_fx = ins_env gamma_x f (polyTy_of_monoTy tau_f) in
+            let fx_proof = gather_exp_ty_substitution gamma_fx exp tau_2 in
+            (match fx_proof with None -> None
+                 | Some(proof_fx, sigma) ->
+                    let gamma_s = env_lift_subst sigma gamma in
+                    let tau_s_f = monoTy_lift_subst sigma tau_f in
+                    let tau_gen = gen gamma_s tau_s_f in
+                    let gamma_s_f = make_env f tau_gen in
+                    let judgment = DecJudgment(gamma, dec, gamma_s_f) in
+                    Some( Proof([proof_fx], judgment), gamma_s_f, sigma))
+        | _ -> raise (Failure "Not implemented yet")
