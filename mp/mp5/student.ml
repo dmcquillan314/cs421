@@ -17,7 +17,7 @@ let rec gather_exp_ty_substitution gamma exp tau =
                | Some t -> (match unify [(tau, freshInstance t)]
                 with None        -> None
                    | Some sigma  -> Some(Proof([],judgment), sigma)))
-    | BinOpAppExp( b_op, exp_1, exp_2 ) ->
+    (*| BinOpAppExp( b_op, exp_1, exp_2 ) ->
         let tau' = binop_signature b_op
         and t_1  = fresh()
         and t_2  = fresh() in
@@ -40,7 +40,29 @@ let rec gather_exp_ty_substitution gamma exp tau =
                                        | Some sigma -> Some(
                                            Proof([proof_1;proof_2], judgment), 
                                            subst_compose sigma sigma_3
-                                        ))
+                                        )) *)
+    | BinOpAppExp( b_op, e1, e2 ) ->
+        let tau' = binop_signature b_op in
+        let tau1 = fresh() in
+        let tau2 = fresh() in
+        let t_1_proof = gather_exp_ty_substitution gamma e1 tau1 in
+        (match t_1_proof with None -> None
+             | Some(proof_t1, sigma_1) ->
+                let gamma_e2 = env_lift_subst sigma_1 gamma in
+                let t_2_proof = gather_exp_ty_substitution gamma_e2 e2 tau2 in
+                (match t_2_proof with None -> None
+                     | Some(proof_t2, sigma_2) ->
+                        let sigma_21 = subst_compose sigma_2 sigma_1 in
+                        let u = unify [(monoTy_lift_subst sigma_21
+                                                          (mk_fun_ty tau1
+                                                                 (mk_fun_ty
+                                                                     tau2
+                                                                     tau)),
+                                                          freshInstance tau')]
+                        in (match u with None -> None
+                             | Some( sigma_3 ) ->
+                                Some(Proof([proof_t1;proof_t2], judgment),
+                                     subst_compose sigma_3 sigma_21))))
     | MonOpAppExp( m_op, exp_1 ) -> 
         let (tau', t_1) = (monop_signature m_op, fresh()) in
         let t_proof = gather_exp_ty_substitution gamma exp_1 t_1 in
@@ -112,21 +134,16 @@ let rec gather_exp_ty_substitution gamma exp tau =
              | Some(proof_int_type, sigma) -> Some( Proof([proof_int_type], judgment),
                                                     sigma ))
     | LetExp(dec_1, exp) ->
-        let dec_1_proof = gather_dec_ty_substitution gamma dec_1 in
-        (match dec_1_proof with None -> None
-             | Some(proof_dec_1, delta, sigma_1) ->
-                let tau = fresh() in
-                let gamma_e = env_lift_subst sigma_1 gamma in
-                let gamma_de = sum_env delta gamma_e in
-                let exp_proof = gather_exp_ty_substitution gamma_de 
-                                                           exp 
-                                                           (monoTy_lift_subst
-                                                                sigma_1
-                                                                tau) in
-                (match exp_proof with None -> None
-                     | Some(proof_exp, sigma_2) ->
-                        Some( Proof([proof_dec_1;proof_exp], judgment),
-                              subst_compose sigma_2 sigma_1 ) ) )
+        let dec_proof = gather_dec_ty_substitution gamma dec_1 in
+        (match dec_proof with None -> None
+             | Some(proof_dec,delta,sigma_1) ->
+                let gamma_e = sum_env delta (env_lift_subst sigma_1 gamma) in
+                let tau' = monoTy_lift_subst sigma_1 tau in
+                let e_proof = gather_exp_ty_substitution gamma_e exp tau in
+                match e_proof with None -> None
+                | Some(proof_e, sigma_2) -> 
+                    let sigma_21 = subst_compose sigma_2 sigma_1 in
+                    Some( Proof([proof_dec;proof_e], judgment), sigma_21) )
 and gather_dec_ty_substitution gamma dec = 
     match dec with 
         Val(v, exp) -> 
