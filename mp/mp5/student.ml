@@ -144,6 +144,34 @@ let rec gather_exp_ty_substitution gamma exp tau =
                 | Some(proof_e, sigma_2) -> 
                     let sigma_21 = subst_compose sigma_2 sigma_1 in
                     Some( Proof([proof_dec;proof_e], judgment), sigma_21) )
+    | HandleExp(exp, o_int_1, e_1, pair_list) -> 
+        let exp_proof = gather_exp_ty_substitution gamma exp tau in
+        (match exp_proof with None -> None
+             | Some(proof_exp, sigma) ->
+                 let fold_result = 
+                     List.fold_left 
+                        (fun proof_sigma_pair -> 
+                            fun (o_int_i, e_i) ->
+                                (match proof_sigma_pair with None -> None
+                                     | Some(rev_proof_list, composed_sigma) ->
+                                        let gamma_i = env_lift_subst composed_sigma gamma in
+                                        let tau_i = monoTy_lift_subst composed_sigma tau in
+                                        let e_i_proof = gather_exp_ty_substitution gamma_i e_i tau_i in 
+                                        (match e_i_proof with None -> None
+                                             | Some(proof_e_i, sigma_i) ->
+                                                Some(
+                                                    proof_e_i :: rev_proof_list, 
+                                                    subst_compose sigma_i composed_sigma
+                                                )
+                                        )
+                                )
+                        )
+                        (Some([proof_exp], sigma))
+                        ((o_int_1, e_1) :: pair_list) in
+                 (match fold_result with None -> None
+                      | Some(rev_proof_list, composed_subst) ->
+                        let proof_list = List.rev rev_proof_list in
+                        Some(Proof(proof_list, judgment), composed_subst)))
 and gather_dec_ty_substitution gamma dec = 
     match dec with 
         Val(v, exp) -> 
@@ -187,4 +215,18 @@ and gather_dec_ty_substitution gamma dec =
                                   gamma_s_21_d_21,
                                   sigma_21
                             )))
+        | Local(dec_1, dec_2) -> 
+            let dec_1_proof = gather_dec_ty_substitution gamma dec_1 in
+            (match dec_1_proof with None -> None
+                 | Some(proof_dec_1, delta_1, sigma_1) ->
+                    let gamma_2 = env_lift_subst sigma_1 (sum_env delta_1 gamma) in
+                    let dec_2_proof = gather_dec_ty_substitution gamma_2 dec_2 in
+                    (match dec_2_proof with None -> None
+                         | Some( proof_dec_2, delta_2, sigma_2 ) ->
+                            let sigma_21 = subst_compose sigma_2 sigma_1 in
+                            let gamma' = env_lift_subst sigma_21 delta_2 in
+                            let judgment = DecJudgment(gamma, dec, gamma') in
+                            Some( Proof([proof_dec_1;proof_dec_2], judgment),
+                                  gamma',
+                                  sigma_21 )))
         | _ -> raise (Failure "Not implemented yet")
