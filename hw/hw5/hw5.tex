@@ -1,0 +1,129 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{5}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\section{Problems}
+
+\subsection{Problem 1}Give a most general unifier for the following set of equations (unification problem). The uppercase letters A, B, C, and D denote variables of unification. The lowercase letters f, g, and h are term constructors of arity 2, 3, and 1 respectively (i.e. take two, three or one argument(s), respectively). Show all your work by listing the operations performed in each step of the unification and the result of that step.
+
+\[	\text{Unify}\{(f(A, g(B, C, h(D))) = f(g(C, B, C), A))\}
+\]
+
+\subsubsection{Steps to solution}
+
+\begin{enumerate}
+	\item[1.]
+	
+	Pick a pair: \( (f(A, g(B,C,h(D) ) ) = f(g(C,B,C), A ) )\)
+	
+	Decompose: \\
+	\hspace*{8mm}becomes: \( \{ A = g(C,B,C); g(B,C,h(D)) = A \} \) \\
+	\hspace*{4mm}\( = \text{Unify} \{ A = g(C,B,C); g(B,C,h(D)) = A \} \)		
+	
+	\item[2.]
+	
+	Pick a pair: \( (g(B,C,h(D)) = A) \)
+	
+	Orient: \\
+	\hspace*{4mm}\( = \text{Unify} \{ A = g(C,B,C); A = g(B,C,h(D)) \} \)	
+		
+	\item[3.]
+	
+	Pick a pair: \( (A = g(C,B,C) \)
+	
+	Eliminate: A with substitution \( \{ A \rightarrow g(C,B,C) \} \) \\
+	\hspace*{4mm}\( = \text{Unify} \{ g(C,B,C) = g(B,C,h(D)) \} o \{ A \rightarrow g(C,B,C) \} \)		
+		
+	\item[4.]
+	
+	Pick a pair: \( (g(C,B,C) = g(B,C,h(D)) ) \)
+	
+	Decompose: \\
+	\hspace*{8mm}becomes: \( \{ C = B; B = C; C = h(D)  \} \) \\
+	\hspace*{4mm}\( = \text{Unify} \{ C = B; B = C; C = h(D) \} o \{ A \rightarrow g(C,B,C) \} \)		
+		
+	\item[5.]
+	
+	Pick a pair: \( ( B = C ) \)
+	
+	Orient: \\
+	\hspace*{4mm}\( = \text{Unify} \{ C = B; C = B; C = h(D) \} o \{ A \rightarrow g(C,B,C) \} \)		
+		
+	\item[6.]
+	
+	Pick a pair: \( ( C = B ) \)
+	
+	\begin{enumerate}
+	\item[6.1]
+	
+	Eliminate: C with substitution \( \{ C \rightarrow B \} \) \\
+	\hspace*{4mm}\( = \text{Unify} \{ B = B; B = h(D) \} o \{ C \rightarrow B \} o \{ A \rightarrow g(C,B,C) \} \)
+	
+	\item[6.2]
+	
+	Compose Substitutions: \\
+	\hspace*{4mm}\( = \text{Unify} \{ B = B; B = h(D) \} o \{ C \rightarrow B; A \rightarrow g(B, B, B) \} \)
+	\end{enumerate}
+	
+	\item[7.]
+	
+	Pick a pair: \( (B = B) \)
+	
+	Delete \\
+	\hspace*{4mm}\( = \text{Unify} \{ B = h(D) \} o \{ C \rightarrow B; A \rightarrow g(B, B, B) \} \)
+
+	\item[8.]
+	
+	Pick a pair:  \( (B = h(D)) \)
+	
+	\begin{enumerate}
+	
+    	\item[8.1.]
+    	
+    	Eliminate: B with substitution \( \{ B \rightarrow h(D) \} \) \\
+    	\hspace*{4mm}\( = \text{Unify} \{ \} o \{ B \rightarrow h(D) \} o \{ C \rightarrow B; A \rightarrow g(B, B, B) \} \)
+    	
+    	\item[8.2.]
+    	
+    	Compose Substitutions: \\
+    	\hspace*{4mm}\( = \text{Unify} \{ \} o \{ B \rightarrow h(D); C \rightarrow h(D); A \rightarrow g(h(D), h(D), h(D) ) \} \)
+	\end{enumerate}
+	
+	\item[9.]
+	
+	Unify is evaluating identity substitution \\
+    	\hspace*{4mm}\( = \{ B \rightarrow h(D); C \rightarrow h(D); A \rightarrow g(h(D), h(D), h(D) ) \} \)
+\end{enumerate}
+
+\subsubsection{Solution}
+
+\[	\text{Unify}\{(f(A, g(B, C, h(D))) = f(g(C, B, C), A))\} = \{ B \rightarrow h(D); C \rightarrow h(D); A \rightarrow g(h(D), h(D), h(D) ) \}
+\]
+
+\subsubsection{Check Solution}
+
+\begin{align} % requires amsmath; align* for no eq. number
+   		     f(A, g(B, C, h(D))) {}&= f(g(C,B,C), A) \\
+   \rightarrow  f(g(h(D),h(D), h(D)), g(h(D), h(D), h(D) ) ) {}&= f( g(h(D),h(D), h(D)), g(h(D), h(D), h(D) ) )
+\end{align}
+
+By applying a simultaneous substitution we verify that the equality holds when the substitution is applied to the constraint in the original unification problem.
+
+\end{document}
+
