@@ -79,8 +79,16 @@ of the program.
 
 ## Section Six - un CPS and relation to CPS ## 
 ''The inverse CPS transformation and its relationship to the CPS transformation.
+The inverse of the CPS transformation can simply be described as the evaluation context of the continuation of the CPS transformation.
+The un CPS transformation can not be a full inverse of the CPS transformation since:  some terms in the resultant transformation are a
+mapping of multiple terms, and some are not the mapping of any term.  
 
 ## Section Seventh - Main results; the extension of the by value lambda calculus and its completeness ## 
-''The derivation of the set of rules so that 
+Through the use of the partial inverse of the CPS transformation the set of axioms for a by value lambda calculus can be derived such that
+the set is complete for beta eta reasoning about CPS programs.  The set of beta and eta reductions is sound with respect to the observational
+equivalence of the terms of a CPS transformation.
 
 ## Section Eighth - Relevance and future research (Conclusion of summary) ## 
+The extension was found to be sound for beta eta reasonaing about typed CPS programs.  For dynamically typed languages the derived calculus
+was unsound since it included the by value eta transformation rule.  Languages that have control operators similar to scheme are still sound
+with respect to observational equivalence.
