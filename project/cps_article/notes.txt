@@ -65,12 +65,22 @@ lambda abstractions in the output of the Fischer CPS to identify administrative 
 output of all practical CPS transformations will be very compact. 
 
 ## Section Four - Formalization of the problem (May merge with Section One) ## 
-
+The problem lies in that by name beta reductions are provable on more equations on CPS terms than that of by value beta reductions.  However,
+The effect on eta reductions is unknown. The goal is to remedy this situation by deriving a set of reductions such that: for any set of terms
+that are contextually equivalent given a set of axioms for a by value labmda calculus, and if we apply the beta eta reductions to them, then 
+they will remain contextually equivalent. 
 
 ## Section Five - CPS language and properties; definition of new CPS transformation ## 
+A one pass CPS transformation would be a composite transformation of the modified Fischer transformation and the normalized 
+beta and eta reductions.  The given one pass transformation will symbolically evaluate redexes by lifting them to base of the 
+program. Aplications of values to values inside the abstractions will take the evaluation contexts with respect to the closest
+lambda abstraction. The resulting transformation will be a parameterized context such that the parameter will be the continuation 
+of the program. 
 
 ## Section Six - un CPS and relation to CPS ## 
+''The inverse CPS transformation and its relationship to the CPS transformation.
 
 ## Section Seventh - Main results; the extension of the by value lambda calculus and its completeness ## 
+''The derivation of the set of rules so that 
 
 ## Section Eighth - Relevance and future research (Conclusion of summary) ## 
