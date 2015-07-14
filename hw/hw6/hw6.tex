@@ -1,0 +1,93 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\sloppy
+
+\oddsidemargin -0.5in
+\evensidemargin -0.5in
+\textwidth 7.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{6}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\section{Theoretical Questions}
+
+\subsection{Problem 1}
+
+In both cases: \\
+let \( \Sigma = \{ a, b, c \} \)
+
+\subsubsection{The language where a occurs in every third position}
+
+If we're assuming that the lack of any string also matches: \\
+( (a \(\vee\) b \(\vee\) c) (a \(\vee\) b \(\vee\) c) a )* \\ \\ If we're assuming that the presence of a string is required to match: \\
+( (a \(\vee\) b \(\vee\) c) (a \(\vee\) b \(\vee\) c) a )+ \\
+
+\subsubsection{The language where each string contains exactly 3 c's}
+(a \(\vee\) b)* c (a \(\vee\) b)* c (a \(\vee\) b)* c (a \(\vee\) b)*
+
+\subsection{Problem 2}
+
+\begin{enumerate}
+	\item\(L_1 = \{ w | w \text{ starts with a symbol 0 and contains the symbol 1 at least once} \} \text{ where } \Sigma = \{ 0, 1 \} \)
+	
+	\begin{enumerate}
+		\item{Regular expression}
+				
+		\item{Regular grammar}
+		
+	\end{enumerate}
+	
+	\item\(L_2 = \{ w | w \text{ contains an equal number of 0s and 1s} \} \text{ where } \Sigma = \{ 0, 1 \} \)
+	
+	\begin{proof}
+	By contradiction; assume the language \(L_2\) is regular. 
+	
+	Let n be the length guaranteed by the pumping lemma. Suppose we have a string \( w = 0^n 1^n \).  Then \( | w | = 2 n \geq n \) and \( w \in L_2 \).  
+	
+	Therefore, there exists strings x, y, and z such that w = xyz, \( | xy | \leq n, y \neq \epsilon \) and for any number i, \( xy^iz \in L_2 \). 
+	
+	Since, \( | x y | \leq n \) y must consist of only 0s.  However \(xy^2z = 0^{n + |y|}1^n \), and since \( |y| > 0 \), we have that \(xy^2z \notin L_2 \)
+	
+	Therefore, we have a contradiction and our language is not regular.
+	\end{proof}
+	
+	\item\(L_3 = \{ w | \text{ the length of w is odd} \} \text{ where } \Sigma = \{ a, b \} \)
+	
+	\begin{enumerate}
+		\item{Regular expression}
+		
+		\item{Regular grammar}
+		
+	\end{enumerate}
+	
+	\item\(L_4 = \{ w | w \text{ does not contain symbol a immediately followed by symbol b} \} \text{ where } \Sigma = \{ a, b, c \} \)
+	
+	\begin{enumerate}
+		\item{Regular expression}
+		
+		\item{Regular grammar}
+		
+	\end{enumerate}
+	
+	\item\(L_5 = \{ w | \text{ the length of w is a perfect cube } \} \text{ where } \Sigma = \{ a, b, c \} \)
+	
+	\begin{enumerate}
+		\item{Regular expression}
+		
+		\item{Regular grammar}
+		
+	\end{enumerate}
+	
+\end{enumerate}
+
+\end{document}
+

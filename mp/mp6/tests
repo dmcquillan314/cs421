@@ -1,0 +1,266 @@
+open Mp6common
+let rubric_version = "1.0"
+let rubric_title = "CS421 Summer 2015 HW6"
+
+(**************************************************************************
+ * You can add new test cases by adding new elements to the following lists
+ * Format is:
+ * TEST<X>ARG(<weight>, <function_name>, <arg1>, <arg2>, ..., <argX>)
+ *
+ * <X> is the number of argument that the function being tested takes.
+ **************************************************************************)
+
+let asMonoTy1     () = Solution.canonicalize (Solution.asMonoTy1 ())
+let asMonoTy1_stu () = Solution.canonicalize (Student.asMonoTy1 ())
+let asMonoTy2     () = Solution.canonicalize (Solution.asMonoTy2 ())
+let asMonoTy2_stu () = Solution.canonicalize (Student.asMonoTy2 ())
+let asMonoTy3     () = Solution.canonicalize (Solution.asMonoTy3 ())
+let asMonoTy3_stu () = Solution.canonicalize (Student.asMonoTy3 ())
+let asMonoTy4     () = Solution.canonicalize (Solution.asMonoTy4 ())
+let asMonoTy4_stu () = Solution.canonicalize (Student.asMonoTy4 ())
+
+let indices = [0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20];;
+let subst_fun     l = let f = Solution.subst_fun l in List.map f indices;;
+let subst_fun_stu l = let f = Student.subst_fun  l in List.map f indices;;
+
+let canon_constraints_subst subst consts = 
+    let (_, _, canon_consts) =
+        Solution.canon_constraints [] 0
+        ((fun f -> List.map (fun (ty1, ty2) -> (f ty1, f ty2))  consts)
+         (Solution.monoTy_lift_subst subst))
+    in canon_consts 
+
+let unify     l =  match (Solution.unify l) with None -> None
+                  | Some subst -> Some(canon_constraints_subst subst l)
+
+let unify_stu l = match (Student.unify l)  with None -> None
+                  | Some subst -> Some(canon_constraints_subst subst l)
+
+
+(* This list is for regular problems *)
+let rubric =
+[
+  (* Problem 0: Not graded, only to warm up. Hence, weight is 0. *)
+  TEST1ARG_TWOFUN(0, asMonoTy1, asMonoTy1_stu, ());
+  TEST1ARG_TWOFUN(0, asMonoTy2, asMonoTy2_stu, ());
+  TEST1ARG_TWOFUN(0, asMonoTy3, asMonoTy3_stu, ());
+  TEST1ARG_TWOFUN(0, asMonoTy4, asMonoTy4_stu, ());
+
+(* Problem 1 -- 8 points*)
+  TEST1ARG_TWOFUN(2, subst_fun, subst_fun_stu, []);
+  TEST1ARG_TWOFUN(2, subst_fun, subst_fun_stu, [(5, mk_fun_ty bool_ty (TyVar(2)))]);
+  TEST1ARG_TWOFUN(2, subst_fun, subst_fun_stu, [(1, TyConst("bool", []))]);
+  TEST1ARG_TWOFUN(2, subst_fun, subst_fun_stu, [(5, TyConst("->", [TyConst("bool", []); TyVar 2])); (1, TyConst("bool", []))]);
+  
+  (* Problem 2 -- 8 points*)
+  TEST2ARG(2, monoTy_lift_subst, [],
+                           (TyConst("->", [TyVar 1; TyVar 5])));
+  TEST2ARG(2, monoTy_lift_subst,
+             [(5, TyConst("->", [TyConst("bool", []); TyVar 2]))],
+             (TyConst("->", [TyVar 1; TyVar 5])));
+  TEST2ARG(2, monoTy_lift_subst,
+              [(0, TyConst("->", [TyConst("bool", []); TyVar 2]))],
+              (TyConst("->", [TyVar 1; TyVar 5])));
+  TEST2ARG(2, monoTy_lift_subst, [(1, TyConst("->",
+                                              [TyConst("bool", []);
+                                               TyConst("*", [TyVar 2; TyVar 1])]));
+                                  (2, TyConst("triple",
+                                              [TyVar 1; TyVar 0; TyConst("bool",[])]))],
+              (TyConst( "quintuple",
+                      [TyVar 0; TyVar 1;
+                       TyConst("bool", []);
+                       TyVar 2; TyConst("list",[TyVar 2])])));
+
+  (* Problem 4 -- 10 points*)
+  TEST2ARG(2, occurs, 0, TyVar 0);
+  TEST2ARG(2, occurs, 0, TyVar 3);
+  TEST2ARG(2, occurs, 0, TyConst("bool", []));
+  TEST2ARG(2, occurs, 0, TyConst("triple", [TyVar 0; TyVar 0; TyVar 1]));
+  TEST2ARG(2, occurs, 0, TyConst("->", [TyVar 1; TyConst("->", [TyVar 2; TyConst("bool", [])])]));
+
+ (* Problem 4 -- 64 points*)
+
+(*** Unifications that should succeed are tested as below ***)
+(* The second argument contains the type variable indices for which we want to get the substitution *)
+
+  (* Testing identity *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, []);
+
+  (* Delete *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [(TyVar 3, TyVar 3)]  );
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [(TyConst("string", []), TyConst("string", [])); (TyVar 3, TyVar 3)] );
+
+  (* Orient *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [((TyConst("int", [])), TyVar 3)]  );
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [(TyConst("->", [TyConst("int", []); TyVar 2]), TyVar 3)]  );
+
+  (* Decompose *)
+  (* constructors with varibles - succeed *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [(TyConst("string", [TyVar 3; TyVar 4]), TyConst("string", [TyVar 1; TyVar 2]))]  );
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("->", [TyConst("*", [TyVar 1; TyVar 3]); TyConst("list", [TyVar 2])]),
+      TyConst("->", [TyConst("*", [TyVar 3; TyVar 2]); TyConst("list", [TyVar 1])]))]  );
+  TEST1ARG_TWOFUN(1, unify, unify_stu,  [(TyConst("string", []), TyConst("string", []))]  );
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyConst("->", [TyVar 1; TyVar 3]), TyConst("->", [TyVar 2; TyVar 3]))]  );
+  (* [(int -> bool); (int -> bool)] - constructors w/o variables - succeed *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyConst("->", [TyConst("int", []); TyConst("bool", [])]),
+      TyConst("->", [TyConst("int", []); TyConst("bool", [])]))]  );
+
+  (* Eliminate *)
+  (* simple *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyConst("int" , []))]);
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyVar 1)]);
+  (* no forw, no back *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyConst("int" , [])); (TyVar 1, TyConst("list", []))]);
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyVar 1); (TyVar 2, TyVar 1)]);
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyVar 1, TyConst("int" , [TyVar 5; TyConst("option", [TyVar 6])]));
+     (TyVar 2, TyConst( "int", [TyVar 6; TyVar 7]));
+     (TyVar 3, TyConst("list", [TyVar 7]));
+     (TyVar 4, TyConst("int" , []))]  );
+  (* forw-subst *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyVar 1); (TyVar 2, TyVar 0)]);
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyVar 1); (TyConst("int" , []), TyVar 0)]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyVar 4, TyConst("int", []));
+     (TyVar 3, TyConst("list", [TyVar 4]));
+     (TyVar 2, TyConst( "int" , [TyVar 3; TyVar 4]));
+     (TyVar 1, TyConst( "int" , [TyVar 2; TyConst("option", [TyVar 3])]))]);
+  (* back-subst *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 2, TyVar 0); (TyVar 0, TyVar 1)]);
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyConst("int" , []), TyVar 0); (TyVar 0, TyVar 1)]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyVar 1, TyConst("int" , [TyVar 2; TyConst("option", [TyVar 3])]));
+     (TyVar 2, TyConst("int" , [TyVar 3; TyVar 4]));
+     (TyVar 3, TyConst("list", [TyVar 4]));
+     (TyVar 4, TyConst("int" , []))]);
+  (* both forw and back *)
+  TEST1ARG_TWOFUN(3, unify, unify_stu,
+    [(TyVar 1, TyConst( "int", [(TyConst("int", [])); TyConst("option", [TyVar 4]); TyVar 6]));
+     (TyVar 2, TyConst("int", [TyVar 7; TyVar 1; TyVar 4]));
+     (TyVar 3, TyConst("list", [TyVar 1; TyConst("->", [TyVar 2; (TyConst("int", []))])]));
+     (TyVar 4, TyConst("->", [(TyConst("int", [])); (TyConst("bool", []))]))]  );
+  (* [(x, y); (y, z); (z, int); (z, x)]  (**) *)
+  TEST1ARG_TWOFUN(3, unify, unify_stu,
+    [(TyVar 1, TyVar 2);
+     (TyVar 2, TyVar 3);
+     (TyVar 3, TyConst("int", []));
+     (TyVar 3, TyVar 1)]);
+
+  (* Complex *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyConst("int", [TyVar 1; TyVar 2]),
+      TyConst("int", [TyConst("bool", []); TyConst( "int", [])]))]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyVar 0, TyConst("list", [TyConst ("int", [])]));
+     (TyConst ("->", [TyVar 0; TyVar 0]), TyConst ("->", [TyVar 0; TyVar 1]))] );
+  TEST1ARG_TWOFUN(3, unify, unify_stu,
+    [(TyConst("int",
+      [TyConst("string", [TyVar 3]);
+       TyConst( "option",
+         [TyConst("int",
+           [TyConst("string", [TyVar 4]);
+            TyVar 1;
+            TyConst("string", [ TyConst("*", [TyVar 3; TyVar 4])])])])]),
+      TyConst("int", [TyVar 1; TyConst("option", [TyVar 2])]));
+     (TyConst("string", [TyVar 3]), TyConst("string", [TyConst("bool", [])]));
+     (TyConst("*", [TyConst("bool", []); TyVar 1]), TyVar 4) ]  );
+
+  (* [(a list, (b -> c) list); (a, b -> (b list))]  /_/ f(x) = f(g(y, z)); x = g(y, f(y)) *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("list", [TyVar 1]), TyConst("list", [TyConst("->", [TyVar 2; TyVar 3])]));
+     (TyVar 1, TyConst("->", [TyVar 2; TyVar 3]))]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyVar 1, TyConst("->", [TyVar 2; TyVar 3]));
+     (TyConst("list", [TyVar 1]), TyConst("list", [TyConst("->", [TyVar 2; TyVar 3])]))]);
+  (* [(y -> z) option = x option; x list = (int -> y) list; x = z -> y] *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("option", [TyConst("->", [TyVar 2; TyVar 3])]), TyConst("option", [TyVar 1]));
+     (TyConst("list", [TyVar 1]), TyConst("list", [TyConst("->", [TyConst("int", []); TyVar 2])]));
+     (TyVar 1, TyConst("->", [TyVar 3; TyVar 2]))
+    ]);
+
+
+
+    (*** Unifications that should fail are tested as below ***)
+
+
+(* (TyConst("int", []), TyConst("bool", [])) *)
+  (* Delete fail propagation *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,  [(TyVar 3, TyVar 3); (TyConst("int", []), TyConst("bool", []))]  );
+  (* Orient faile propagation *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,  [((TyConst("int", [])), TyVar 3); (TyConst("int", []), TyConst("bool", []))]  );
+
+  (* Decompose *)
+  (* wrong ctors *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu, [(TyConst("int", []), TyConst("bool", []))]);
+  (* wrong number of arguments *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("option", [TyConst("int", [])]),
+      TyConst("option", [TyConst("int", []); TyConst("bool", [])]))] );
+  (* propagation after inserting subcomponents *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("option", [TyConst("int", [])]),
+      TyConst("option", [TyConst("bool", [])]))] );
+  (* propagation *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyConst("->", [TyVar 1]), TyConst("->", [TyVar 2])); (TyConst("int", []), TyConst("bool", []))]  );
+
+  (* Eliminate *)
+  (* occurs fail *)
+  TEST1ARG_TWOFUN(2, unify, unify_stu,  [(TyVar 1, TyConst("string", [TyVar 0; TyVar 1]))]  );
+  (* propagation *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu, [(TyVar 0, TyConst("int" , [])); (TyConst("int", []), TyConst("bool", []))]);
+  (* propagation after forw substs *)
+  TEST1ARG_TWOFUN(3, unify, unify_stu, [(TyVar 0, TyConst("int" , [])); (TyVar 0, TyConst("bool", []))]);
+
+  (* Complex *)
+  TEST1ARG_TWOFUN(1, unify, unify_stu,
+    [(TyVar 1, TyConst("->", [TyVar 1; TyConst("option", [TyVar 2])]));
+     (TyConst("list", [TyVar 2]), TyVar 1)]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("option", [TyConst("->", [TyVar 2; TyVar 3])]), TyConst("option", [TyVar 1]));
+     (TyConst("list", [TyVar 1]), TyConst("list", [TyConst("->", [TyConst("int", []); TyVar 2])]));
+     (TyVar 1, TyConst("->", [TyVar 3; TyVar 2]));
+     (TyConst("int", []), TyConst("bool", []))
+    ]);
+  TEST1ARG_TWOFUN(2, unify, unify_stu,
+    [(TyConst("option", [TyConst("->", [TyVar 2; TyVar 3])]), TyConst("option", [TyVar 1]));
+     (TyConst("list", [TyVar 1]), TyConst("list", [TyConst("->", [TyConst("int", []); TyVar 2])]));
+     (TyVar 1, TyConst("->", [TyConst("bool", []); TyVar 2]))
+    ])
+
+ 
+]
+
+(* This list is for the extra zero credit problem *)
+let extra_rubric = [
+  TEST2ARG(0, equiv_types, (TyVar 0), (TyVar 4));
+  TEST2ARG(0, equiv_types, (TyConst("int",[])), (TyConst("bool", [])));
+  TEST2ARG(0, equiv_types,
+    (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 4])])),
+    (TyConst("->", [TyVar 3; TyConst("->", [TyVar 4; TyVar 3])])));
+  TEST2ARG(0, equiv_types,
+        (TyConst("list",[TyVar 3; TyVar 1])),
+        (TyConst("option",[TyVar 3; TyVar 1])));
+  TEST2ARG(0, equiv_types,
+    (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 4])])),
+    (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 2])])));
+  TEST2ARG(0, equiv_types,
+    (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 2])])),
+    (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 4])])));
+  TEST2ARG(0, equiv_types,
+        (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 4])])),
+        (TyConst("->", [TyVar 3; TyVar 2])));
+  TEST2ARG(0, equiv_types,
+        (TyConst("->", [TyVar 3; TyVar 2])),
+        (TyConst("->", [TyVar 4; TyConst("->", [TyVar 3; TyVar 4])])));
+  TEST2ARG(0, equiv_types,
+        (TyConst("list",[TyVar 3; TyVar 1])),
+        (TyConst("list",[TyVar 1; TyVar 3])));
+  TEST2ARG(0, equiv_types,
+        (TyConst("list",[TyVar 1; TyVar 3])),
+        (TyConst("list",[TyVar 3; TyVar 1])))
+]
