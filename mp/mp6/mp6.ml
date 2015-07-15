@@ -65,7 +65,41 @@ and occurs_list x ty_list =
         head_occurs || ( occurs_list x ty_list_tail );;
 
 (* Problem 4*)
-let rec unify eqlst = failwith "Not implemented"
+let rec unify eqlst =
+    (match eqlst with [] -> Some( [] ) 
+    | ((s, t) :: eqlst_t) ->
+        if s = t then unify eqlst_t (* delete *)
+        else 
+            (
+                match (s, t)
+                    with (TyConst _, TyVar _) -> (* orient *)
+                        unify ((t, s) :: eqlst_t) 
+                    | (TyConst(n_1, ty_list_1), TyConst(n_2, ty_list_2) ) -> (* decompose *)
+                        if n_1 = n_2 && (equal_count ty_list_1 ty_list_2) then 
+                            unify (eqlst_t @ (List.combine ty_list_1 ty_list_2))
+                        else None (* failure *)
+                    | (TyVar i, t ) -> (* eliminate *)
+                        if occurs i t then None (* failure *)
+                        else
+                            (match unify (create_c_2 eqlst_t [(i, t)]) 
+                              with None -> None (* failure *)
+                                 | Some(phi) -> 
+                                    let phi_t = monoTy_lift_subst phi t in
+                                    let subst_s_phi_t = (i, phi_t) in
+                                    Some(subst_s_phi_t :: phi)
+                            )
+                    | _ -> None (* failure *)
+            )
+    )
+and equal_count l_1 l_2 =
+    (List.length l_1) = (List.length l_2)
+and create_c_2 con subst =
+    match con with [] -> []
+    | ( ( s_i, t ) :: c_t) -> 
+        (
+            monoTy_lift_subst subst s_i,
+            monoTy_lift_subst subst t
+        ) :: create_c_2 c_t subst;;
 
 (* Problem 5: No Credit *)
 let equiv_types ty1 ty2 = failwith "Not implemented"
