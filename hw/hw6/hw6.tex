@@ -38,15 +38,25 @@ If we're assuming that the lack of any string also matches: \\
 
 \begin{enumerate}
 	\item\(L_1 = \{ w | w \text{ starts with a symbol 0 and contains the symbol 1 at least once} \} \text{ where } \Sigma = \{ 0, 1 \} \)
+	% regular
 	
 	\begin{enumerate}
 		\item{Regular expression}
 				
+		0 ( 0 \(\vee\) 1 )* 1 ( 0 \(\vee\) 1 )*		
+				
 		\item{Regular grammar}
 		
+		\( <Language\_1> :: = 0 <ZeroOrOne> \) \\
+		\( <ZeroOrOne>   :: = 0 <ZeroOrOne> \) \\
+		\( <ZeroOrOne>   :: = 1 <ZeroOrOneOrEmpty> \) \\
+		\( <ZeroOrOneOrEmpty> :: = 0 <ZeroOrOneOrEmpty> \) \\
+		\( <ZeroOrOneOrEmpty> :: = 1 <ZeroOrOneOrEmpty> \) \\
+		\( <ZeroOrOneOrEmpty> :: = \epsilon \)
 	\end{enumerate}
 	
 	\item\(L_2 = \{ w | w \text{ contains an equal number of 0s and 1s} \} \text{ where } \Sigma = \{ 0, 1 \} \)
+	% non-regular
 	
 	\begin{proof}
 	By contradiction; assume the language \(L_2\) is regular. 
@@ -61,12 +71,19 @@ If we're assuming that the lack of any string also matches: \\
 	\end{proof}
 	
 	\item\(L_3 = \{ w | \text{ the length of w is odd} \} \text{ where } \Sigma = \{ a, b \} \)
+	% regular
 	
 	\begin{enumerate}
 		\item{Regular expression}
 		
+		( a \(\vee\) b ) ( ( a \(\vee\)  b ) ( a \(\vee\) b ) )*
 		\item{Regular grammar}
 		
+		\( <Language\_3> :: = a <AOrBOrEmpty> \)\\
+		\( <Language\_3> :: = b <AOrBOrEmpty> \)\\
+		\( <AOrBOrEmpty> :: = a <Language\_3> \)\\
+		\( <AOrBOrEmpty> :: = b <Language\_3> \)\\
+		\( <AOrBOrEmpty> :: = \epsilon \)
 	\end{enumerate}
 	
 	\item\(L_4 = \{ w | w \text{ does not contain symbol a immediately followed by symbol b} \} \text{ where } \Sigma = \{ a, b, c \} \)
@@ -79,14 +96,46 @@ If we're assuming that the lack of any string also matches: \\
 	\end{enumerate}
 	
 	\item\(L_5 = \{ w | \text{ the length of w is a perfect cube } \} \text{ where } \Sigma = \{ a, b, c \} \)
+	% non-regular
 	
-	\begin{enumerate}
-		\item{Regular expression}
-		
-		\item{Regular grammar}
-		
-	\end{enumerate}
+	\begin{proof}
+	By contradiction; assume the language \(L_5\) is regular.
 	
+	Let n be the length guaranteed by the pumping lemma.   
+	
+	Suppose \( w = a^{\frac{n^3}{3}} b^{\frac{n^3}{3}} c^{\frac{n^3}{3}} \).
+	
+	Since \( |w| = \frac{n^3}{3} + \frac{n^3}{3} + \frac{n^3}{3} = n^3 \), which is a perfect cube, \( w \in L_5 \).
+	
+	By the pumping lemma we know that we can split \( w = xyz \) s.t. the conditions of the pumping lemma hold.
+	
+	We know that:
+	\[
+		1 \leq | y | \leq | xy | \leq n
+	\]
+	
+	Since for the pumping lemma to hold we also require that any amount of y terms in the middle to still let the expression hold. Therefore we know also that:
+	\[
+		xy^2z \in L_5
+	\]
+	
+	Therefore we may assume that \( | xy^2z | \) is a perfect cube.  However we know that:
+	
+	\begin{align}
+		n^3 {}& = | w | \\
+		       {}& = | xyz | \\
+		       {}& < | xy^2z | \\
+		       {}& \leq n^3 + n \hspace*{8mm}\text{ since, } | y | \leq n \\
+		       {}& < n^3 + 3n^2 + 3n + 1
+	\end{align}
+	
+	In summary, we now know that:
+	\[
+		n^3 < | xy^2z | < n^3 + 3n^2 + 3n + 1
+	\]
+	
+	That is \( | xy^2z | \) lies between two subsequent perfect cubes.  Therefore, it cannot be a perfect cube itself, and hence we have a contradiction to \( xyyz \in L_5 \).
+	\end{proof}
 \end{enumerate}
 
 \end{document}
