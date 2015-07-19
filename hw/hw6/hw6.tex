@@ -27,9 +27,9 @@ let \( \Sigma = \{ a, b, c \} \)
 
 \subsubsection{The language where a occurs in every third position}
 
-If we're assuming that the lack of any string also matches: \\
-( (a \(\vee\) b \(\vee\) c) (a \(\vee\) b \(\vee\) c) a )* \\ \\ If we're assuming that the presence of a string is required to match: \\
-( (a \(\vee\) b \(\vee\) c) (a \(\vee\) b \(\vee\) c) a )+ \\
+\def \booleanOr { \( \vee \) }
+\def \abcDisjunction { (a \( \vee \) b \( \vee \) c) }
+( \abcDisjunction \abcDisjunction a)* ( ( \abcDisjunction \abcDisjunction a ) \booleanOr ( \abcDisjunction \abcDisjunction ) \booleanOr \abcDisjunction )? 
 
 \subsubsection{The language where each string contains exactly 3 c's}
 (a \(\vee\) b)* c (a \(\vee\) b)* c (a \(\vee\) b)* c (a \(\vee\) b)*
@@ -81,17 +81,28 @@ If we're assuming that the lack of any string also matches: \\
 		
 		\( <Language\_3> :: = a <AOrBOrEmpty> \)\\
 		\( <Language\_3> :: = b <AOrBOrEmpty> \)\\
-		\( <AOrBOrEmpty> :: = a <Language\_3> \)\\
 		\( <AOrBOrEmpty> :: = b <Language\_3> \)\\
+		\( <AOrBOrEmpty> :: = a <AOrC> \)\\
 		\( <AOrBOrEmpty> :: = \epsilon \)
 	\end{enumerate}
 	
 	\item\(L_4 = \{ w | w \text{ does not contain symbol a immediately followed by symbol b} \} \text{ where } \Sigma = \{ a, b, c \} \)
+		
+	% non-regular
 	
 	\begin{enumerate}
 		\item{Regular expression}
 		
+		((aa)*(ac) \(\vee\) b \(\vee\) c)* a
 		\item{Regular grammar}
+		
+		\( <Language\_4> ::= a <AOrC> \)\\
+		\( <Language\_4> ::= b <Language\_4> \)\\
+		\( <Language\_4> ::= c <Language\_4> \)\\
+		\( <Language\_4> ::= \epsilon \)\\
+		\( <AOrC> ::= c <Language\_4> \)\\
+		\( <AOrC> ::= a <AOrC> \)\\
+		\( <AOrC> ::= \epsilon \)\\
 		
 	\end{enumerate}
 	
