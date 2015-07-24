@@ -1,0 +1,4 @@
+#load "mp7common.cmo";;
+#load "student.cmo";;
+open Mp7common;;
+open Student;;

@@ -1,0 +1,141 @@
+{
+
+open Mp7common;;
+
+let line_count = ref 1
+let char_count = ref 1
+
+let cinc n = char_count := !char_count + n
+let linc n = line_count := (char_count := 1; !line_count + n)
+
+let make_ascii_string escaped_ascii = 
+    let code_str = String.sub escaped_ascii 1 ((String.length escaped_ascii) - 1) in
+    let code = int_of_string code_str in
+    if code < 0 || code > 255 then raise( Failure "invalid ascii character" )
+    else char_of_int code;;
+}
+
+(* You can assign names to commonly-used regular expressions in this part
+   of the code, to save the trouble of re-typing them each time they are used *)
+
+let numeric = ['0' - '9']
+let lowercase = ['a' - 'z']
+let uppercase = ['A' - 'Z']
+let upper_lower_case = [ 'a' - 'z' 'A' - 'Z' ]
+let ident_char = [ 'a' - 'z' 'A' - 'Z' '0' - '9' '_' ''' ]
+let letter =['a' - 'z' 'A' - 'Z' '_']
+let unit_reg = "()"
+let boolean_reg = "true" | "false"
+
+rule token = parse
+  (* whitespace *)
+  | [' ' '\t' '\n'] { token lexbuf }  (* skip over whitespace *)
+  (* end of file *)
+  | eof             { EOF } 
+  (* p1 *)
+  | '~'             { NEG }
+  | '+'             { PLUS }
+  | '-'             { MINUS }
+  | '*'             { TIMES }
+  | '/'             { DIV }
+  | "+."            { DPLUS }
+  | "-."            { DMINUS }
+  | "*."            { DTIMES }
+  | "/."            { DDIV }
+  | '^'             { CARAT }
+  | '<'             { LT }
+  | '>'             { GT }
+  | "<="            { LEQ }
+  | ">="            { GEQ }
+  | '='             { EQUALS }
+  | "<>"            { NEQ }
+  | '|'             { PIPE }
+  | "=>"            { ARROW }
+  | ';'             { SEMI }
+  | "::"            { DCOLON }
+  | '@'             { AT }
+  | "nil"           { NIL }
+  | "let"           { LET }
+  | "local"         { LOCAL }
+  | "val"           { VAL }
+  | "rec"           { REC }
+  | "and"           { AND }
+  | "end"           { END }
+  | "in"            { IN }
+  | "if"            { IF }
+  | "then"          { THEN }
+  | "else"          { ELSE }
+  | "fun"           { FUN }
+  | "fn"            { FN }
+  | "op"            { OP }
+  | "mod"           { MOD }
+  | "raise"         { RAISE }
+  | "handle"        { HANDLE }
+  | "with"          { WITH }
+  | "not"           { NOT }
+  | "andalso"       { ANDALSO }
+  | "orelse"        { ORELSE }
+  | '['             { LBRAC }
+  | ']'             { RBRAC }
+  | '('             { LPAREN }
+  | ')'             { RPAREN }
+  | ','             { COMMA }
+  | '_'             { UNDERSCORE }
+  (* p2 *)
+  | numeric+ '.' numeric* as real   { REAL (float_of_string real) }
+  | numeric+ as integer             { INT (int_of_string integer) }
+  (* p3 *)
+  | unit_reg                        { UNIT }
+  | boolean_reg as b                { BOOL (bool_of_string b) } 
+  (* p4 *)
+  | upper_lower_case ident_char* as ident { IDENT ident }  
+  (* p5 *)
+  | ";;" [^ '\n' ]*                 { token lexbuf }
+  | "*)"                            { raise (Failure "unmatched comment") }
+  | "(*"                            { blockComment 1 lexbuf }
+  | '"'                             { str "" lexbuf }
+  and blockComment depth = parse
+    | "*)" { if depth = 1 then token lexbuf else blockComment (depth - 1) lexbuf }
+    | "(*" { blockComment (depth + 1) lexbuf }
+    | _ { blockComment depth lexbuf }
+    | eof { raise (Failure "unmatched comment") }
+  and str cur_string = parse
+    | '"'  { STRING cur_string }
+    | "\\" { str (cur_string ^ '\\') }
+    | "\'" { str (cur_string ^ '\'') }
+    | "\"" { str (cur_string ^ '"') }
+    | "\t" { str (cur_string ^ '\t') }
+    | "\n" { str (cur_string ^ '\n') }
+    | "\r" { str (cur_string ^ '\r') }
+    | '\' numeric numeric? numeric? as code { str (cur_string ^ (make_ascii_string code_str) ) }  
+    | eof { raise (Failure "unmatched string") }
+
+{(* do not modify this function: *)
+ let lextest s = token (Lexing.from_string s)
+
+let opcom r = OPCOM(r.line_num,r.char_num)
+let clcom r = CLCOM(r.line_num,r.char_num)
+let sclcom r = SCLCOM(r.line_num,r.char_num)
+
+  let get_all_tokens s =
+      let _ = char_count := 1 in
+      let _ = line_count := 1 in
+      let b = Lexing.from_string (s^"\n") in
+      let rec g () = 
+      match token b with EOF -> []
+      | t -> t :: g () in
+      g ()
+
+let try_get_all_tokens s =
+    try Some (get_all_tokens s) with Failure "unmatched comment" -> None
+    	     			      	 | OpenComm r -> None
+    	     			      	 | CloseComm r -> None
+    	     			      	 | SuperCloseComm r -> None
+let try_comm_get_all_tokens s =
+    try Some (get_all_tokens s) with Failure "unmatched comment" -> None
+    	     			      	 | OpenComm r -> Some ([opcom r])
+    	     			      	 | CloseComm r -> Some ([clcom r])
+    	     			      	 | SuperCloseComm r -> Some ([sclcom r])
+
+ }
+
