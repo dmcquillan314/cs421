@@ -1,0 +1,563 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\usepackage{tikz}
+\sloppy
+
+\oddsidemargin -0.5in
+\evensidemargin -0.5in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\DeclareMathSizes{10}{10}{10}{10}
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{7}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\def \exptype { \( \langle exp \rangle \) }
+\def \sumexp { \( \langle sum\_exp \rangle \) }
+\def \atom { \( \langle atom \rangle \) }
+\def \vartype { \( \langle var \rangle \) }
+\def \while { \text{ while } }
+\def \do { \text{ do } }
+\def \od { \text{ od } }
+\def \iftext { \text{ if } }
+\def \fitext { \text{ fi } }
+\def \thentext { \text{ then } }
+\def \elsetext { \text{ else } }
+\def \skip { \text{ skip } }
+		
+\begin{enumerate}
+
+\item[1]
+
+Consider the following grammar over the alphabet {if, then, else, +, x, y, z, (, )}:
+
+\begin{enumerate}
+
+\item[a]{Show that the above grammar is ambiguous by showing at least three distinct parse trees for the string "if x then x else x + y + z"}
+
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=2.4cm},
+  level 2/.style={sibling distance=1.2cm}]
+\node { \exptype }
+  child {node {if} }
+  child {node {\exptype }
+  	child { node {\vartype} 
+		child { node { x } }
+	}
+  }
+  child {node {then} }
+  child {node {\exptype} 
+  	child { node {\vartype} 
+		child { node { x } }
+	}
+  }
+  child {node {else} }
+  child {node {\exptype} 
+  	child { node { \exptype } 
+  		child { node {\vartype} 
+			child { node { x } }
+		}
+	}
+	child { node { + } }
+	child { node { \exptype } 
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { y } }
+			}
+		}
+		child { node { + } }
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { z } }
+			}
+		}
+	}
+  };
+\end{tikzpicture}
+
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=2.4cm},
+  level 2/.style={sibling distance=1.2cm}]
+\node { \exptype }
+  child {node {if} }
+  child {node {\exptype }
+  	child { node {\vartype} 
+		child { node { x } }
+	}
+  }
+  child {node {then} }
+  child {node {\exptype} 
+  	child { node {\vartype} 
+		child { node { x } }
+	}
+  }
+  child {node {else} }
+  child {node {\exptype} 
+	child { node { \exptype } 
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+		child { node { + } }
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { y } }
+			}
+		}
+	}
+	child { node { + } }
+  	child { node { \exptype } 
+  		child { node {\vartype} 
+			child { node { z } }
+		}
+	}
+  };
+\end{tikzpicture}
+
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=4.0cm},
+  level 2/.style={sibling distance=2.0cm}]
+\node { \exptype  }
+	child { node { \exptype }
+		child { node { if } }
+            	child { node { \exptype } 
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+            	child { node { then } }
+            	child { node { \exptype } 
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+            	child { node { else } }
+            	child { node { \exptype } 
+			child { node { \exptype }
+				child { node { \vartype }
+					child { node { x } }
+				}
+			}
+			child { node { + } }
+			child { node { \exptype }
+				child { node { \vartype }
+					child { node { y } }
+				}
+			}
+		}
+	}
+	child { node { + } }
+	child { node { \exptype } 
+		child { node { \vartype }
+			child { node { z } }
+		}
+	};
+\end{tikzpicture}
+
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=4.0cm},
+  level 2/.style={sibling distance=2.0cm}]
+\node { \exptype  }
+	child { node { \exptype }
+		child { node { if } }
+            	child { node { \exptype } 
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+            	child { node { then } }
+            	child { node { \exptype } 
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+            	child { node { else } }
+            	child { node { \exptype } 
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+	}
+	child { node { + } }
+	child { node { \exptype } 
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { y } }
+			}
+		}
+		child { node { + } }
+		child { node { \exptype }
+			child { node { \vartype }
+				child { node { z } }
+			}
+		}
+	};
+\end{tikzpicture}
+
+\item[b]{Write a new grammar accepting the same language that is unabmiguous, and such that addition \(\langle exp \rangle + \langle exp \rangle \) has higher precedence than conditional.}
+
+\begin{align}
+	\langle exp \rangle ::= &{} \text{if } \langle sum\_exp \rangle \text{ then } \langle sum\_exp \rangle \text{ else } \langle sum\_exp \rangle  \\
+				          &{} | \langle sum\_exp \rangle \\
+	\langle sum\_exp \rangle ::= &{} \langle sum\_exp \rangle + \langle atom \rangle \\
+					 &{} | \langle atom \rangle \\
+	\langle atom \rangle ::= &{} \langle var \rangle \\
+					 &{} | ( \langle exp \rangle ) \\
+	\langle var \rangle ::= &{} x | y | z
+\end{align}
+
+\item[c]{ Give the parse tree for "f x then x else x + y + z" using the grammar you gave in the previous part of this problem. }
+
+\begin{tikzpicture}[level distance=1.2cm,
+  level 1/.style={sibling distance=2.4cm},
+  level 2/.style={sibling distance=1.6cm}]
+\node { \exptype  }
+	child { node { if } }
+	child { node { \sumexp }
+		child { node { \atom }
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+	}
+	child { node { then } }
+	child { node { \sumexp }
+		child { node { \atom }
+			child { node { \vartype }
+				child { node { x } }
+			}
+		}
+	}
+	child { node { else } }
+	child { node { \sumexp }
+		child { node { \sumexp }
+			child { node { \sumexp }
+				child { node { \atom }
+					child { node { \vartype }
+						child { node { x } }
+					}
+				}
+			}
+			child { node { + } }
+			child { node { \atom }
+				child { node { \vartype }
+					child { node { y } }
+				}
+			}
+		}
+		child { node { + } }
+		child { node { \atom } 
+			child { node { \vartype } 
+				child { node { z } }
+			}
+		}
+	};
+\end{tikzpicture}
+
+\end{enumerate}
+
+\item[2] Add a new increment operator ++I to the syntax of expression E and a new do-while operator do C while B od to the syntax of commands C
+
+\( I \in \text{ Identifiers } \) \\
+\( N \in \text{ Numerals } \) \\
+\( B ::= \text{ true } | \text{ false } | B \text{ \& } B | B \text{ or } B | \text{ not } B | E < E | E = E \) \\
+\( E ::= N | I | ++I | E + E | E * E | E - E | - E \) \\
+\( C ::= \text{skip} | C;C | I ::= E | \text{ if } B \text{ then } C \text{ else } C \text{ fi } | \text{ while } B \text{ do } C \text{ od } | \text{ do } C \text{ while } B \text{ od } \) \\
+
+a. Add the structural operational semantics (a.k.a. natural semantics) for these operators. Note that the operators work as follows. The semantics of the operator ++I is to add one to the current value of I, then store the new value into I. The execution of do C while B od starts with executing the command C in the body of the loop. The loop is repeated until the boolean expression B is evaluated to false. \\
+
+Natural Semantics: \\
+
+++I:
+\[
+	\frac
+	{
+		v = m(I) + 1
+	}
+	{
+		(++I, m) \Downarrow (v, m[ I \rightarrow v ] )
+	}
+\]
+
+do C while B od:
+\[
+	\frac
+	{
+		(C, m) \Downarrow m' \hspace*{4mm} (\text{ while } B \text{ do } C \text{ od }, m') \Downarrow m''
+	}
+	{
+		(\text{do } C \text{ while } B \text{ od }, m) \Downarrow m''
+	}
+\]
+
+b.  Add the transition semantics for these operators. They have the same meaning as part a. \\
+
+Transition Semantics: \\
+
+++I:
+\[
+	\frac
+	{
+		v = m(I) + 1
+	}
+	{
+		(++I, m) \rightarrow (v, m[ I \rightarrow v ] )
+	}
+\]
+
+do C while B od:
+\[
+	(\text{do } C \text{ while } B \text{ od }, m ) \rightarrow (C; \text{ while } B \text{ do } C \text{ od }, m )
+\]
+
+c. Using the rules given for natural semantics in class, and the rules written in parts a and b, give a proof that starting with a memory that maps x to 3, do y ::= ++x while x < 5 od evaluates to a memory that maps x and y to 5. \\
+
+Natural Semantics Proof: \\
+
+\begin{proof}
+
+\( \text{let } m' = \{ x \rightarrow 4 \}	 \) \\
+\( \text{let } m'' = \{ x \rightarrow 4, y \rightarrow 4 \}	 \) \\
+\( \text{let } m''' = \{ x \rightarrow 5, y \rightarrow 4 \}	 \) \\
+\( \text{let } m'''' = \{ x \rightarrow 5, y \rightarrow 5 \}	 \)
+
+\[
+	\frac
+	{
+		\overbrace{
+			(y ::= ++x, m) \Downarrow m'[y \rightarrow 4]
+		}^{e_1}
+		\hspace*{4mm}
+		\overbrace{
+			(\while x < 5 \do y ::= ++x  \od, m'') \Downarrow m''''
+		}^{e_2}
+	}
+	{
+		(\do y ::= ++x \while x < 5 \od, m) \Downarrow m''''
+	}
+\]
+
+\[
+	\frac
+	{	
+		\dfrac
+		{
+			m(x) + 1 = 4
+		}
+		{
+			(++x, m) \Downarrow (4, m[x \rightarrow 4])
+		}
+	}
+	{
+		\underbrace{
+			(y ::= ++x, m) \Downarrow m'[y \rightarrow 4]
+		}_{e_1}
+	}
+\]
+
+\[
+	\dfrac
+	{
+            	\dfrac
+            	{
+            		\dfrac
+            		{
+            			4 < 5 = \text{ true }
+            		}
+            		{
+            			(x, m'') \Downarrow 4 \hspace*{4mm} (5, m'') \Downarrow 5
+            		}
+            	}
+            	{	
+        			(x < 5, m'') \Downarrow \text{ true }
+            	}
+            	\hspace*{4mm}
+            	\dfrac
+            	{
+            		\dfrac
+            		{
+            			m(x) + 1 = 5
+            		}
+            		{
+            			(++x, m'') \Downarrow (5, m''[x \rightarrow 5 ])
+            		}
+            	}
+            	{	
+        			(y ::= ++x, m'') \Downarrow m'''[y \rightarrow 5]
+            	}
+            	\hspace*{4mm}
+            	\dfrac
+            	{
+            		\dfrac
+            		{
+            			\dfrac
+            			{
+            				5 < 5 = \text{ false}
+            			}
+            			{
+            				(x, m'''') \Downarrow 5 \hspace*{4mm} (5, m'''') \Downarrow 5
+            			}
+            		}
+            		{
+            			(x < 5, m'''') \Downarrow \text{ false }
+            		}
+            	}
+            	{	
+            		(\while x < 5 \do y ::= ++x \od, m'''') \Downarrow m''''
+            	}
+	}
+	{
+		\underbrace{
+			(\while x < 5 \do y ::= ++x \od, m'') \Downarrow m''''
+		}_{e_2}
+	}
+\]
+
+\end{proof}
+
+\pagebreak
+Transition Semantics Proof: \\
+
+\begin{proof}
+
+\( \text{let } m' = \{ x \rightarrow 4 \}	 \) \\
+\( \text{let } m'' = \{ x \rightarrow 4, y \rightarrow 4 \}	 \) \\
+\( \text{let } m''' = \{ x \rightarrow 5, y \rightarrow 4 \}	 \) \\
+\( \text{let } m'''' = \{ x \rightarrow 5, y \rightarrow 5 \}	 \)
+
+\[
+	(\do y::= ++x \while x < 5 \od, m) \rightarrow
+\]
+
+\[
+	\dfrac
+	{
+		\dfrac
+		{
+			4 = m(x) + 1
+		}
+		{
+			(++x, m) \rightarrow (4, m[x \rightarrow 4])
+		}
+	}
+	{
+		\rightarrow (y ::= ++x ; \while x < 5 \do y ::= ++x \od, m)
+	}
+\]
+
+\[
+	\frac
+	{
+		(y ::= 4, m') \rightarrow m'[y \rightarrow 4]
+	}
+	{
+		\rightarrow (y ::= 4; \while x < 5 \do y ::= ++x \od, m')
+	}
+\]
+
+\[
+	\rightarrow (\while x < 5 \do y ::= ++x \od, m'')
+\]
+
+\[
+	\frac
+	{
+		(x, m'') \rightarrow (4, m'')
+	}
+	{
+		\rightarrow (\iftext x < 5 \thentext y ::= ++x; \while x < 5 \do y ::= ++x \od \elsetext \skip, m'')
+	}
+\]
+
+\[
+	\frac
+	{
+		\text{ true } = 4 < 5
+	}
+	{
+		\rightarrow (\iftext 4 < 5 \thentext y ::= ++x; \while x < 5 \do y ::= ++x \od \elsetext \skip, m'')
+	}
+\]
+
+\[
+	\rightarrow (\iftext \text{ true } \thentext y ::= ++x; \while x < 5 \do y ::= ++x \od \elsetext \skip, m'')
+\]
+
+\[
+	\dfrac
+	{
+		\dfrac
+		{
+			5 = m''(x) + 1
+		}
+		{
+			(++x, m'') \rightarrow (5, m''[x \rightarrow 5 ])
+		}
+	}
+	{
+		\rightarrow (y::= ++x; \while x < 5 \do y ::= ++x \od, m'')
+	}
+\]
+
+\[
+	\frac
+	{
+		(y ::= 5, m''') \rightarrow m'''[y \rightarrow 5]
+	}
+	{
+		\rightarrow (y ::= 5; \while x < 5 \do y ::= ++x \od, m''')
+	}
+\]
+
+\[
+	\rightarrow (\while x < 5 \do y ::= ++x \od, m'''')
+\]
+
+\def \looptext { \while x < 5 \do y ::= ++x \od }
+
+\[
+	\frac
+	{
+		(x, m'''') \rightarrow (5, m'''')
+	}
+	{
+		\rightarrow (\iftext x < 5 \thentext y ::= ++x; \looptext \elsetext \skip, m'''')
+	}
+\]
+
+\[
+	\frac
+	{
+		5 < 5 = \text{ false }
+	}
+	{
+		\rightarrow (\iftext 5 < 5 \thentext y ::= ++x; \looptext \elsetext \skip, m'''')
+	}
+\]
+
+\[
+	\rightarrow (\iftext \text{ false } \thentext y ::= ++x; \looptext \elsetext \skip, m'''')
+\]
+
+\[
+	\rightarrow (\skip, m'''') \rightarrow m''''
+\]
+
+\end{proof}
+
+\end{enumerate}
+		
+\end{document}
+
