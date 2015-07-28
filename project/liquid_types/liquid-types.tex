@@ -1,0 +1,40 @@
+\input{../style/cs421_project_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\solution{Dan McQuillan}{\today}{Liquid Types article}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+% introduction
+The verification of low level programs can prove to be challenging due to the presence of mutable state, pointer arithmetic, and unbounded heap-allocated data structures. Verification of these programs is done through the use of dependent refinement types.  Each program variable and expression is represented as a triple of the expression or variable, a conventional type (such as int or bool), and a refinement predicate.
+
+Current implementations of verification rely on a large amount of annotations that would need to be placed in the source files. The presented software, CSolve, is a proposed way to automate this process which is based on the concept of liquid types. Liquid types combine refinement types with three elements to automate verification:
+
+\begin{enumerate}
+	\item First, associating the refinement types with heap locations and tracking the locations referenced by pointers.
+	\item Second, adding constructs which allow strong updates to the types of heap locations so that the system can verify the correct initialization of newly-allocated regions of memory.
+	\item Third, utilize refinement type inference to automatically verify important safety properties without extenuous amounts of annotations.
+\end{enumerate}
+
+% Architecture, use and availability
+Type inference is split into four phases:
+
+\begin{enumerate}
+
+\end{enumerate}
+
+\end{document}
+
