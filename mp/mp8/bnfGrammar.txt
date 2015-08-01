@@ -1,0 +1,79 @@
+======================================================================
+                      DISAMBIGUATED GRAMMAR
+======================================================================
+<main> ::= <exp> ;
+         | <dec> ;
+<dec> ::= <dec> <dec>
+        | local <dec> in <dec> end
+        | val IDENT = <exp>
+        | val _ = <exp>
+        | val rec IDENT IDENT { IDENT }* = <exp>
+        | fun IDENT IDENT { IDENT }* = <exp>
+<exp> ::= <handle>
+          | <atomic>
+          | <list>
+          | <let>
+          | <not_handle
+<atomic> ::= IDENT
+             | BOOL | INT | REAL | STRING | UNIT | NIL
+             | ( <exp> )
+             | ( <exp> { , <exp> }* )
+             | ( <exp> { ; <exp> }* )
+<list> ::= [ <exp> ]
+           | []
+<let> ::= let <dec> in <exp> { ; <exp> }* end
+<handle> ::= <exp> handle <pat> => <exp> { PIPE <pat> => <exp> }*
+<not_handle> ::= <raise> 
+                 | <not_raise>
+<raise> ::= raise <exp>
+<not_raise> ::= <fn>
+                | <not_fn>
+<fn> ::= fn IDENT => <exp>
+<not_fn> ::= <if>
+             | <not_if>
+<if> ::= if <exp> then <exp> else <exp>
+<not_if> ::= <or_else>
+             | <not_or_else>
+<or_else> ::= <exp> orelse <exp>
+<not_or_else> ::= <and_also>
+                  | <not_and_also>
+<and_also> ::= <exp> andalso <exp>
+<not_and_also> ::= <comp>
+                   | <not_comp>
+<comp> ::= <exp> = <exp>
+           | <exp> < <exp>
+           | <exp> > <exp>
+           | <exp> <= <exp>
+           | <exp> >= <exp>
+           | <exp> <> <exp>
+<not_comp> ::= <cons>
+               | <not_cons>
+<cons> ::= <exp> :: <exp>
+<not_cons> ::= <add_sub>
+               | <not_add_sub>
+<add_sub> ::= <exp> + <exp>
+              | <exp> +. <exp>
+              | <exp> - <exp>
+              | <exp> -. <exp>
+<not_add_sub> ::= <mult_div>
+                  | <not_mult_div>
+<mult_div> ::= <exp> * <exp>
+              | <exp> *. <exp>
+              | <exp> / <exp>
+              | <exp> /. <exp>
+<not_mult_div> ::= <mon_op>
+                   | <not_mon_op>
+<mon_op> ::= ~ <exp>
+             | fst <exp>        
+             | snd <exp>
+             | hd <exp>
+             | tl <exp>
+<not_mon_op> ::= <app>
+                 | <not_app>
+<app> ::= <exp> <exp>
+<not_app> ::= <op>
+<op> ::= op <infid>
+<pat> ::= INT | _
+
+
+op _        (op_ binds tighter than anything else)left _ _    (application is left associative)~_ hd_ tl_ fst_ snd_left *  left *.  left /  left /.left +  left +.  left -  left -.  left ^right ::    (cons is right associative)left =  left <  left >  left <=  left >= left <>left _andalso_left _orelse_if_then_else_fn_ => _raise__handle_ -> _ | _ | _ ..., where | is right associative

@@ -1,0 +1,107 @@
+\input{../style/cs421_style.tex}
+\usepackage{algorithm}
+\usepackage{listings}
+%\usepackage{algpseudocode}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage{epstopdf}
+\sloppy
+
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 6.5in
+\topmargin -0.5in
+\textheight 9.0in
+
+\begin{document}
+
+\newcommand\oversetSymbol[2]{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily #2}}}{#1}}}
+
+\def \betareduce { \xrightarrow{\beta} }
+\def \alphaconvert { \xrightarrow{\alpha} }
+\def \alphacongruent { \oversetSymbol{\sim}{\(\alpha\)} }
+
+\solution{Dan McQuillan}{\today}{8}{Summer 2015}
+
+\pagestyle{myheadings}  % Leave this command alone
+	 	
+\begin{enumerate}
+
+	\def \proveL { ( \lambda y. x y ) ( \lambda x. \lambda y. y x) }
+	\def \proveR { ( \lambda z. x z ) ( \lambda y. \lambda x. x y ) }
+
+	\def \abstractionAL { \proveL }
+	\def \abstractionAR { ( \lambda z. x z ) (\lambda x. \lambda x. \lambda y. y x) }
+	\def \abstractionBL { \abstractionAR }
+	\def \abstractionBR { ( \lambda z. x z ) ( \lambda w. \lambda y. y w ) }
+	\def \abstractionCL { \abstractionBR }
+	\def \abstractionCR { ( \lambda z. x z) ( \lambda w. \lambda x. x w ) }
+	\def \abstractionDL  { \abstractionCR }
+	\def \abstractionDR { \proveR }
+
+	\item show: \( \proveL \alphacongruent \proveR  \)
+	
+	\begin{proof}
+	\\
+		\( \lambda y. x y \alphaconvert \lambda z. x z \) \hspace*{4mm} so: \\
+		\( \lambda y. x y \alphaconvert \lambda z. x z \) \hspace*{4mm} so: \\
+		\( \abstractionAL \alphacongruent \abstractionAR \) \\
+		
+		\( \lambda x. \lambda y. y x \alphaconvert \lambda w. \lambda y. y w \) \hspace*{4mm} so: \\
+		\( \lambda x. \lambda y. y x \alphacongruent \lambda w. \lambda y. y w \) \hspace*{4mm} so: \\
+		\( \abstractionBL \alphacongruent \abstractionBR \) \\
+		
+		\( \lambda w. \lambda y. y w \alphaconvert \lambda w. \lambda x. x w \) \hspace*{4mm} so: \\
+		\( \lambda w. \lambda y. y w \alphacongruent \lambda w. \lambda x. x w \) \hspace*{4mm} so: \\
+		\( \abstractionCL \alphacongruent \abstractionCR \) \\
+		
+		\( \lambda w. \lambda x. x w \alphaconvert \lambda y. \lambda x. x y \) \hspace*{4mm} so: \\
+		\( \lambda w. \lambda x. x w \alphacongruent \lambda y. \lambda x. x y \) \hspace*{4mm} so: \\
+		\( \abstractionDL \alphacongruent \abstractionDR \) \\
+		
+		Given the congruences above we know that:
+		\begin{align}
+			\abstractionAL {}& \alphacongruent \abstractionBL \\
+					       {}& \alphacongruent \abstractionCL \\
+					       {}& \alphacongruent \abstractionDL \\
+					       {}& \alphacongruent \abstractionDR
+		\end{align}
+		
+		By the transitive property we therefore know:
+		\[
+			\proveL \alphacongruent \proveR
+		\]
+	\end{proof}
+	
+	\item Evaluate \( ( \lambda x. x ( \lambda y. x y )) ((\lambda u. u) (\lambda w. w) ) \)
+	
+	\begin{enumerate}
+		\item Eager Evaluation
+		
+		\begin{align}
+			( \lambda x. x ( \lambda y. x y )) ((\lambda u. u) (\lambda w. w) ) {}& \rightarrow ( \lambda x. x ( \lambda y. x y )) ( \lambda w. w) \\
+															 {}& \rightarrow ( \lambda w. w ) ( \lambda y. ( \lambda w. w ) y ) \\
+															 {}& \rightarrow ( \lambda y. ( \lambda w. w ) y ) \\
+															 {}& \rightarrow ( \lambda y. y ) 
+		\end{align}
+		
+		\item Lazy Evaluation
+		
+		\begin{align}
+			( \lambda x. x ( \lambda y. x y )) ((\lambda u. u) (\lambda w. w) ) {}& \rightarrow (( \lambda u. u) (\lambda w. w)) ( \lambda y. x y ) \\
+															 {}& \rightarrow ( \lambda w. w) ( \lambda y. x y) \\
+															 {}& \rightarrow ( \lambda y. x y )
+		\end{align}
+		
+		\item unrestricted \( \alpha \beta \)-reduction
+		
+		\begin{align}
+			( \lambda x. x ( \lambda y. x y )) ((\lambda u. u) (\lambda w. w) ) {}& \betareduce ( \lambda x. x ( \lambda y. x y )) ( \lambda w. w) \\
+															 {}& \betareduce ( \lambda w. w) (\lambda y. ( \lambda w. w ) y ) \\
+															 {}& \betareduce ( \lambda y. ( \lambda w. w ) y ) \\
+															 {}& \betareduce ( \lambda y. y )
+		\end{align}
+	\end{enumerate}
+\end{enumerate}
+
+\end{document}
+
