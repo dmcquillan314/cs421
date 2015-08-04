@@ -1,6 +1,6 @@
 open Mp8common
 let rubric_version = "1.0"
-let rubric_title = "CS421 Summer 2015 MP8"
+let rubric_title = "CS421 Fall 2012 MP9"
 
 (**************************************************************************
  * You can add new test cases by adding new elements to the following lists
@@ -71,8 +71,8 @@ TEST1ARG_TWOFUN(1, parse, parse_stu, "          let val _ = true in 5 end;");
 TEST1ARG_TWOFUN(1, parse, parse_stu, "(* Q15 *) local val x = 2 in val y = x + 3 end;");
 TEST1ARG_TWOFUN(1, parse, parse_stu, "          local val x = 2 in local val x = 2 in val y = x + 3 end end;");
 (* 10pts *)
-TEST1ARG_TWOFUN(1, parse, parse_stu, "(* Q16 *) val rec f g = g 5;");
-TEST1ARG_TWOFUN(1, parse, parse_stu, "          val rec f x = 1;");
+TEST1ARG_TWOFUN(1, parse, parse_stu, "(* Q16 *) val rec f = fn x => f x;");
+TEST1ARG_TWOFUN(1, parse, parse_stu, "          val rec f = 1;");
 (* 15pts *)
 TEST1ARG_TWOFUN(1, parse, parse_stu, "(* Q17 *) fun f x a b c d a b c d = fn y => fn f => f x;");
 TEST1ARG_TWOFUN(1, parse, parse_stu, "          fun f x = x;");
@@ -84,6 +84,6 @@ TEST1ARG_TWOFUN(1, parse, parse_stu, "          fun f x = x;");
 (* This list is for extra credit problems *)
 let extra_rubric = [
 (* 10pts *)
-TEST1ARG_TWOFUN(0, parse, parse_stu, "(* Q18 *) \"hi\" handle 1 => \"one\" | 2 => \"two\";");
-TEST1ARG_TWOFUN(0, parse, parse_stu, "          true handle 4 => false | _ => true;");
+TEST1ARG_TWOFUN(1, parse, parse_stu, "(* Q18 *) \"hi\" handle 1 => \"one\" | 2 => \"two\";");
+TEST1ARG_TWOFUN(1, parse, parse_stu, "          true handle 4 => false | _ => true;");
 ]

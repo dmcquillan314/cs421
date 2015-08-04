@@ -143,10 +143,10 @@ atomic_mon_exp:
 atomic_exp:
     const_exp                      { ConstExp $1 }
     | OP bin_op                    { FnExp("x", (FnExp("y", $2 (VarExp "x") (VarExp "y")))) }
+    | IDENT                        { VarExp $1 }
     | paren_exp                    { $1 } 
     | list_exp                     { $1 }
-    | IDENT                        { VarExp $1 }
-    | LET dec IN expression END    { LetExp($2, $4) } 
+    | LET dec IN expression_seq END{ LetExp($2, $4) } 
 
 const_exp:
     INT                            { IntConst $1 }
