@@ -22,7 +22,7 @@
 \doublespacing		
 		
 % introduction
-The verification of low level programs can prove to be challenging due to the presence of mutable state, pointer arithmetic, and unbounded heap-allocated data structures. Verification of these programs is done through the use of dependent refinement types.  Each program variable and expression is represented as a triple of the expression or variable, a conventional type (such as int or bool), and a refinement predicate.
+CSolve is a proposed verifier by the authors for C programs that is based on Liquid Type inference.  The verification of low level programs can prove to be challenging due to the presence of mutable state, pointer arithmetic, and unbounded heap-allocated data structures. Verification of these programs is done through the use of dependent refinement types.  Each program variable and expression is represented as a triple of the expression or variable, a conventional type (such as int or bool), and a refinement predicate.
 
 Current implementations of verification rely on a large amount of annotations that would need to be placed in the source files. The presented software, CSolve, is a proposed way to automate this process which is based on the concept of liquid types. Liquid types combine refinement types with three elements to automate verification:
 
@@ -52,6 +52,8 @@ Using the extern keyword on a function will instruct CSolve that it is a global 
 The input of CSolve is a C source code file and a file speciying the set of logical predicates to use in refinement inference. Contained within are a predefined set of predicates that have commonly proven useful. The output of CSolve will either be that a program is type-safe or a file delimited list of each error along with the type constraints that were violated from step three of the type inference process.
 
 Since, the C intermediate language (CIL) is a hook directly into the compilation process of C source code, CSolve is also able to work with standard distributions of GCC with minor modifications to the build process.
+
+I enjoyed reading this article and I believe that it is a well thought out idea.  The idea of the software being integrated with GCC results in developers being able to install it and transparently gain the advantages of CSolve.  They were also able to create the annotations in such a way that they would not pollute the code base of an application with a mess of annotations that could affect the readability of the software.  I also really liked that they make it very easy to configure the package to change the way that it processes which also makes it very flexible.
 
 % good design both architecturally to avoid conflict with the programmer.
 % re-use of existing software
