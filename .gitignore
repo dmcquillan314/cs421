@@ -22,4 +22,4 @@ setup.log
 # LaTeX
 *.log
 *.aux
-*.pdf
+project/**/*.pdf
