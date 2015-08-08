@@ -1,0 +1,77 @@
+Slide 1
+=======
+Type verification
+ - CSolve is a proposed software solution for type verification
+ - Software uses liquid type inference to verify types
+
+Slide 2
+=======
+Implementations
+ - Current implementations 
+     - large amounts of annotations
+     - complicates the source code
+ - Proposed implementation
+     - automated type verification
+     - based on liquid types
+         - combine refinement with three elements to automate verification
+
+Slide 3
+=======
+Elements of Verification
+ - Associate refinement types with heap locations
+ - Constructs to allow strong updates to the types of heap locations
+ - Utilize refinement type inference to verify safety properties
+
+Slide 4
+=======
+Type inference
+ - Input read by CIL to produce simplified AST representation
+ - Physical types generated for each declared function
+ - Generated AST walked and expressions associated with a refinement type and variable
+ - Refinement variables variables are solved
+
+Slide 5
+=======
+Solving typing constraints
+ - CSolve uses Z3 SMT Solver
+     - Used to discharge logical validity queries in constraint solving
+     - Refinement type systems are easy to reason and synthesis facts about contents of data structures
+
+Slide 6
+=======
+Verify program safety with CSolve
+ - Uses found refinement types
+ - Infers liquid types
+     - refinement predicate is a conjunction of user-provided logical qualifiers
+
+Slide 7
+=======
+Additional configurations of CSolve
+ - Extern keyword
+     - Provides ability to ignore evaluation of type of body 
+     - Type will be replaced with configured value when looked at from other source files
+ - Set of annotations to change default behavior
+
+Slide 8
+=======
+Input to CSolve
+ - C source code file
+ - File specifying logical predicates for use in refinement inferences
+
+Slide 9
+=======
+Output of CSolve
+ - Reports if the program is type-safe
+ - If it is not then it reports any found errors in the type constraints
+
+Slide 10
+========
+Ease of use
+ - CIL hooks directly into GCC
+ - Requires minor modifications to build process
+
+Slide 11
+========
+Thoughts on article
+
+

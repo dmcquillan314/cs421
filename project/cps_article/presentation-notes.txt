@@ -1,0 +1,83 @@
+Slide 1
+=======
+Goal
+
+Claim
+ - Plotkin's lambda calculus is incomplete
+
+Proof method:
+ - Extension of Plotkin's calculus to form
+    - CPS transformation
+    - invserse CPS transformation
+
+ - Validation using observational equivalence
+
+Slide 2
+=======
+Observational Equivalence
+ - prove correctness of transformation
+ - holds true if the filling of each context results in:
+     - undefined or
+     - defined
+
+Slide 3
+=======
+Soundness of lambda
+ - By value lambda calculi
+     - sound by observational equivalence in a typed setting
+ - By name lambda calculi
+     - sound if language does not observe termination behavior
+
+Slide 4
+======
+Question
+ - which set of axioms can prove that pairs of expressions are equal after transformation?
+ - must be provable for both:
+     - by value lambda calculi
+     - by name lambda calculi
+
+Slide 5
+=======
+Problem
+ - By name lambda calculi are more sound than by value lambda calculi for beta reductions
+ - Eta reductions' effects are unknown for both calculi
+ - proposed solution:
+     - remedy situation by deriving a set of axioms that are
+         - contextually equivalent
+         - observationally equivalent after applying reductions
+
+Slide 6
+=======
+CPS transformation
+ - composite transformation of 
+     - modified Fischer transformation
+     - normalized beta and eta reductions
+ - evaluates redexes by lifting to base of program
+ - result
+     - parameterized context
+
+Slide 7
+======
+Inverse transformation
+ - Evaluation context of the CPS transformation
+ - Not a full inverse since
+     - some terms are a composite
+     - some are not the mapping of any term
+
+Slide 8
+======
+Studied correlation
+ - axioms can be derived via 
+     - partial inverse of the CPS transformation
+ - axioms are sound with respect to observational equivalence of the CPS' transformation terms
+
+Slide 9
+=======
+Findings
+ - sound for beta eta reasoning about CPS programs
+ - dynamically typed languages were unsound
+ - scheme-like languages are sound with respect to observational equivalence
+
+Slide 10
+======== 
+Thoughts on article 
